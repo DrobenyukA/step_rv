@@ -1,0 +1,18 @@
+body{
+	color: #00c;
+	font-style: italic;
+}
+a{
+	color: #c00;
+	text-decoration: none;
+	font-weight: bold;
+	font-style: normal;
+}
+h1{
+	text-align: center;
+}
+p{
+	margin: 15px 50px;
+	font-size: 18px;
+	text-align: justify;
+}
