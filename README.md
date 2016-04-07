@@ -1,5 +1,8 @@
 # step_rv
-Step lessons
-<br/>
+Репозиторій із уроками в КА "ШАГ"
+
 <img src="http://git-scm.com/figures/18333fig0201-tn.png" alt="gitcycle">
-# someBeautifulThings
+
+### Останні оновлення:
+  - Додав виконані домашні завдання урок 7-8 та 9-10
+  - В папці _Video_ знаходяться записи зроблені на уроках
