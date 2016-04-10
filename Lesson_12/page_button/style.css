@@ -1,0 +1,32 @@
+#first, #second {
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	padding: 15px;
+	text-align: center;
+	margin-left: 25px;
+	background-color: #000;
+	color: #fff;
+}
+
+#first:hover{
+	background-color: #0a0;
+	-webkit-transition: All 1.5s;
+	-o-transition: All 1.5s;
+	transition: All 1.5s;
+	-webkit-transform: rotate(-360deg);
+	-ms-transform: rotate(-360deg);
+	-o-transform: rotate(-360deg);
+	transform: rotate(-360deg);
+}
+
+#second:hover{
+	background-color: #f00;
+	-webkit-transition: All 0.5s;
+	-o-transition: All 0.5s;
+	transition: All 0.5s;
+	-webkit-transform: rotate(720deg);
+	-ms-transform: rotate(720deg);
+	-o-transform: rotate(720deg);
+	transform: rotate(720deg);
+}

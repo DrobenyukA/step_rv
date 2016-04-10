@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<meta name=viewport content="width=device-width, initial-scale=1">	
+	<title>Interpreter - pattern</title>
+	<link rel="stylesheet" href="../css/reset.css"/>
+	<link rel="stylesheet" href="../css/peter_page_style.css"/>
+</head>
+<body>
+		<main class="main-page"> 
+			<header> 
+				<h1><span>Паттерн</span> <b>Interpreter</b></h1>
+			</header>
+				<section>
+					<div class="buttons">
+						<div class="button">
+							<a href="../index.html">
+							<h4>home</h4>
+							</a>
+						</div>
+					</div>
+					<div class="arrow">
+						<a href="#top" title="go on top"></a>
+					</div>
+	<h2>Название и классификация паттерна</h2>
+	<p><b>Интерпретатор</b> &ndash; паттерн поведения классов.</p>
+	<h2>Назначение</h2>
+	<p><b>Д</b>ля заданного языка определяет представление его грамматики, а также интерпретатор предложений этого языка.</p>
+	<h2>Мотивация</h2>
+	<p>
+		<b>Е</b>сли некоторая задача возникает часто, то имеет смысл представить ее конкретные проявления в виде предложений на простом языке. Затем можно будет создать интерпретатор, который решает задачу, анализируя предложения этого языка.
+	</p>
+	<p>
+		<b>Н</b>апример, поиск строк по образцу &ndash; весьма распространенная задача. Регулярные выражения &ndash; это стандартный язык для задания образцов поиска. Вместо того чтобы программировать специализированные алгоритмы для сопоставления строк с каждым образцом, не проще ли построить алгоритм поиска так, чтобы он мог интерпретировать регулярное выражение, описывающее множество строк-образцов?
+	</p>
+	<p>
+		<b>П</b>аттерн интерпретатор определяет грамматику простого языка, представляет предложения на этом языке и интерпретирует их. Для приведенного примера паттерн описывает определение грамматики и интерпретации языка регулярных выражений.
+	</p>
+	<p>
+		<b>П</b>редположим, что они описаны следующей грамматикой:<br/>
+	</p>
+		<pre>
+			<span style="color: #f8f8f2">expression</span> <span style="color: #f8f8f2">::</span><span style="color: #f92672">=</span> <span style="color: #f8f8f2">literal</span> <span style="color: #f92672">|</span> <span style="color: #f8f8f2">alternation</span> <span style="color: #f92672">|</span> <span style="color: #f8f8f2">sequence</span> <span style="color: #f92672">|</span> <span style="color: #f8f8f2">repetition</span> <span style="color: #f92672">|</span><span style="color: #ae81ff"><sup>1</sup></span><span style="color: #f8f8f2">(</span> <span style="color: #e6db74">&#39; expression &#39;</span> <span style="color: #f8f8f2">)</span> <span style="color: #e6db74">&#39;</span>
+			<span style="color: #f8f8f2">alternation</span> <span style="color: #f8f8f2">:</span> <span style="color: #f8f8f2">:</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">expression</span> <span style="color: #e6db74">&#39; | &#39;</span> <span style="color: #f8f8f2">expression</span>
+			<span style="color: #f8f8f2">sequence</span> <span style="color: #f8f8f2">:</span> <span style="color: #f8f8f2">:</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">expression</span> <span style="color: #e6db74">&#39; &amp; &#39;</span> <span style="color: #f8f8f2">expression</span>
+			<span style="color: #f8f8f2">repetition</span> <span style="color: #f8f8f2">:</span> <span style="color: #f8f8f2">:</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">expression</span> <span style="color: #e6db74">&#39; * &#39;</span>
+			<span style="color: #f8f8f2">literal</span> <span style="color: #f8f8f2">:</span> <span style="color: #f8f8f2">:</span> <span style="color: #f92672">=</span> <span style="color: #e6db74">&#39; a <sup>1</sup> | &#39;</span> <span style="color: #f8f8f2">b</span> <span style="color: #e6db74">&#39; | &#39;</span> <span style="color: #f8f8f2">c</span> <span style="color: #e6db74">&#39; | . . . { &#39;</span> <span style="color: #f8f8f2">a</span> <span style="color: #ae81ff"><sup>1</sup></span> <span style="color: #f92672">|</span> <span style="color: #e6db74">&#39; b &#39;</span> <span style="color: #f92672">|</span> <span style="color: #e6db74">&#39; c <sup>1</sup> | ... } *</span></pre>
+	<p>
+		<b>П</b>аттерн интерпретатор использует класс для представления каждого пра-ила грамматики. Символы в правой части правила - это переменные экземпляров таких классов. Для представления приведенной выше грамматики требуется пять классов: абстрактный класс RegularExpression и четыре его подкласса LiteralExpression, AlternationExpression, SequenceExpression и RepetitionExpression. В последних трех подклассах определены переменные для хранения подвыражений.
+	</p>
+	<img src="../img/pages/3/pi_1.jpg" alt="scheme"/>
+	<p>
+		<b>К</b>аждое регулярное выражение, описываемое этой грамматикой, представляется в виде абстрактного синтаксического дерева, в узлах которого находятся экземпляры этих классов. Например, дерево
+		<img src="../img/pages/3/pi_2.jpg" alt="scheme"/>
+		представляет выражение
+	</p>
+		<pre>
+			<span style="color: #f8f8f2">raining</span> <span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">(dogs</span> <span style="color: #f92672">|</span> <span style="color: #f8f8f2">cats)</span> <span style="color: #f92672">*</span></pre>
+	<p>
+		<b>М</b>ы можем создать интерпретатор регулярных выражений, определив в каждом подклассе RegularExpression операцию Interpret, принимающую в качестве аргумента контекст, где нужно интерпретировать выражение. Контекст состоит из входной строки и информации о том, как далеко по ней мы уже продвинулись. В каждом подклассе RegularExpression операция Interpret производит сопоставление с оставшейся частью входной строки. Например:
+	</p>
+	<ul>
+		<li>iteralExpression проверяет, соответствует ли входная строка литералу, который хранится в объекте подкласса;</li>
+		<li>AlternationExpression проверяет, соответствует ли строка одной из альтернатив;</li>
+		<li>RepetitionExpression проверяет, если в строке повторяющиеся вхождения выражения, совпадающего с тем, что хранится в объекте.</li>
+	</ul>
+	<p>
+		<b>И</b> так далее.
+	</p>
+	<h2>Применимость</h2>
+	<p>
+		<b>И</b>спользуйте паттерн интерпретатор, когда есть язык для интерпретации, предложения которого можно представить в виде абстрактных синтаксических деревьев. Лучше всего этот паттерн работает, когда:
+	</p>
+	<ul>
+		<li>рамматика проста. Для сложных грамматик иерархия классов становится слишком громоздкой и неуправляемой. В таких случаях лучше применять генераторы синтаксических анализаторов, поскольку они могут интерпре тировать выражения, не строя абстрактных синтаксических деревьев, что экономит память, а возможно, и время;</li>
+		<li>эффективность не является главным критерием. Наиболее эффективные интерпретаторы обычно не работают непосредственно с деревьями, а сначала транслируют их в другую форму. Так, регулярное выражение часто преобразуют в конечный автомат. Но даже в этом случае сам <em>транслятор</em> можно реализовать с помощью паттерна интерпретатор.</li>
+	</ul>
+	<h2>Структура</h2>
+	<img src="../img/pages/3/pi_3.jpg" alt="scheme"/>
+	<h2>Участники</h2>
+	<ul>
+		<li>
+			<b>AbstractExpression</b> (RegularExpression) - абстрактное выражение:
+			<ul class="line">
+				<li>
+					объявляет абстрактную операцию Interpret, общую для всех узлов в абстрактном синтаксическом дереве;
+				</li>
+			</ul>
+		</li>
+		<li>
+			<b>TerminalExpression</b> (LiteralExpression) &ndash; терминальное выражение:
+			<ul class="line">
+				<li>
+					реализует операцию Interpret для терминальных символов грамматики;
+				</li>
+				<li>
+					необходим отдельный экземпляр для каждого терминального символа в предложении;
+				</li>
+			</ul>
+		</li>
+		<li>
+			<b>NonterminaIExpression</b>  (AlternationExpression,RepetitionExpression, SequenceExpressions) &ndash; нетерминальное выражение:
+			<ul class="line">
+				<li>
+					по одному такому классу требуется для каждого грамматического правила R :: = R <sub>l</sub> R <sub>2</sub> ... R <sub>п</sub> ;
+				</li>
+				<li>
+					хранит переменные экземпляра типа AbstractExpression для каждого символа от R <sub>l</sub> до R <sub>п</sub> ;
+				</li>
+				<li>
+					реализует операцию Interpret для нетерминальных символов грамматики. Эта операция рекурсивно вызывает себя же для переменных, представляющих ./?,,... /? <sub>п</sub> ;
+				</li>
+			</ul>
+		</li>
+		<li>
+			<b>Context</b> &ndash; контекст:
+			<ul class="line">
+				<li>
+					содержит информацию, глобальную по отношению к интерпретатору;
+				</li>
+			</ul>
+		</li>
+		<li>
+			<b>Client</b> &ndash; клиент:
+			<ul class="line">
+				<li>
+					строит (или получает в готовом виде) абстрактное синтаксическое дерево, представляющее отдельное предложение на языке с данной грамматикой. Дерево составлено из экземпляров классов Nonterminal-Expression и Terminal-Expression;
+				</li>
+				<li>
+					вызывает операцию Interpret.
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h2>Отношения</h2>
+	<ul>
+		<li>
+			клиент строит (или получает в готовом виде) предложение в виде абстрактного синтаксического дерева, в узлах которого находятся объекты классов NonterminalExpression и Terminal-Expression. Затем клиент инициализирует контекст и вызывает операцию Interpret;
+		</li>
+		<li>
+			в каждом узле вида NonterminalExpression через операции Interpret определяется операция Interpret для каждого подвыражения. Для класса TerminalExpression операция Interpret определяет базу рекурсии;
+		</li>
+		<li>
+			операции Interpret в каждом узле используют контекст для сохранения и доступа к состоянию интерпретатора.
+		</li>
+	</ul>
+	<h2>Результаты</h2>
+	<p>
+		<b>У</b> паттерна интерпретатор есть следующие достоинства и недостатки:
+	</p>
+	<ul>
+		<li>
+			<em>грамматику легко изменять и расширять.</em>
+			Поскольку для представления грамматических правил в паттерне используются классы, то для изменения или расширения грамматики можно применять наследование. Существующие выражения можно модифицировать постепенно, а новые определять как вариации старых;
+		</li>
+		<li>
+			<em>простая реализация грамматики.</em>
+			Реализации классов, описывающих узлы абстрактного синтаксического дерева, похожи. Такие классы легко кодировать, а зачастую их может автоматически сгенерировать компилятор или генератор синтаксических анализаторов;
+		</li>
+		<li>
+			<em>сложные грамматики трудно сопровождать.</em>
+			В паттерне интерпретатор определяется по меньшей мере один класс для каждого правила грамматики (для правил, определенных с помощью формы Бэкуса-Наура - BNF, может понадобиться и более одного класса). Поэтому сопровождение грамматики с большим числом правил иногда оказывается трудной задачей. Для ее решения могут быть применены другие паттерны (см. раздел «Реализация»). Но если грамматика очень сложна, лучше прибегнуть к другим методам, например воспользоваться генератором компиляторов или синтаксических анализаторов;
+		</li>
+		<li>
+			<em>добавление новых способов интерпретации выражений.</em>
+			Паттерн интерпретатор позволяет легко изменить способ вычисления выражений. Например, реализовать красивую печать выражения вместо проверки входящих в него типов можно, просто определив новую операцию в классах выражений. Если вам приходится часто создавать новые способы интерпретации выражений, подумайте о применении паттерна посетитель. Это поможет избежать изменения классов, описывающих грамматику.
+		</li>
+	</ul>
+	<h2>Реализация</h2>
+	<p>
+		<b>У</b> реализаций паттернов интерпретатор и компоновщик есть много общего. Следующие вопросы относятся только к интерпретатору:
+	</p>
+	<ul>
+		<li>
+			<em>создание абстрактного синтаксического дерева.</em> Паттерн интерпретатор не поясняет, как создавать дерево, то есть разбор выражения не входит в его задачу. Создать дерево разбора может таблично-управляемый или написанный вручную (обычно методом рекурсивного спуска) анализатор, а также сам клиент;
+		</li>
+		<li>
+			<em>определение операции Interpret.</em> Определять операцию Interpret в классах выражений необязательно. Если создавать новые интерпретаторы приходится часто, то лучше воспользоваться паттерном посетитель и поместить операцию Interpret в отдельный объект-посетитель. Например, для грамматики языка программирования будет нужно определить много операций над абстрактными синтаксическими деревьями: проверку типов, оптимизацию, генерацию кода и т.д. Лучше, конечно, использовать посетителя и не определять эти операции в каждом классе грамматики;
+		</li>
+		<li>
+			<em>разделение терминальных символов с помощью паттерна приспособленец.</em> Для грамматик, предложения которых содержат много вхождений одного и того же терминального символа, может оказаться полезным разделение этого символа. Хорошим примером служат грамматики компьютерных программ, поскольку в них каждая переменная встречается в коде многократно. В примере из раздела «Мотивация» терминальный символ dog (для моделирования которого используется класс LiteralExpression) может попадаться много раз.
+			<br/>
+			В терминальных узлах обычно не хранится информация о положении в абстрактном синтаксическом дереве. Необходимый для интерпретации контекст предоставляют им родительские узлы. Налицо различие между разделяемым (внутренним) и передаваемым (внешним) состояниями, так что вполне применим паттерн приспособленец.
+			<br/>
+			Например, каждый экземпляр класса LiteralExpression для dog получает контекст, состоящий из уже просмотренной части строки. И каждый такой экземпляр делает в своей операции Interpret одно и то же - проверяет, содержит ли остаток входной строки слово dog, - безотносительно к тому, в каком месте дерева этот экземпляр встречается.
+		</li>
+	</ul>
+	<h2>Пример кода</h2>
+	<p>
+		<b>М</b>ы приведем два примера. Первый - законченная программа на Smalltalk для проверки того, соответствует ли данная последовательность регулярному выражению. Второй - программа на C++ для вычисления булевых выражений.
+	</p>
+	<p>
+		<b>П</b>рограмма сопоставления с регулярным выражением проверяет, является ли строка корректным предложением языка, определяемого этим выражением. Регулярное выражение определено следующей грамматикой:
+	</p>
+		<pre>
+			<span style="color: #f8f8f2">expression</span> <span style="color: #f8f8f2">::</span><span style="color: #f92672">=</span> <span style="color: #f8f8f2">literal</span> <span style="color: #f8f8f2">|</span> <span style="color: #f8f8f2">alternation</span> <span style="color: #f8f8f2">|</span> <span style="color: #f8f8f2">sequence</span> <span style="color: #f8f8f2">|</span> <span style="color: #f8f8f2">repetition</span> <span style="color: #f8f8f2">|</span> <span style="color: #e6db74">&#39; ( &#39;</span> <span style="color: #f8f8f2">expression</span> <span style="color: #e6db74">&#39; ) &#39;</span>
+			<span style="color: #f8f8f2">alternation</span> <span style="color: #f8f8f2">::</span><span style="color: #f92672">=</span> <span style="color: #f8f8f2">expression</span> <span style="color: #e6db74">&#39;Г</span> expression
+			<span style="color: #f8f8f2">sequence</span> <span style="color: #f8f8f2">::</span><span style="color: #f92672">=</span> <span style="color: #f8f8f2">expression</span> <span style="color: #e6db74">&#39;&amp;&#39;</span> <span style="color: #f8f8f2">expression</span>
+			<span style="color: #f8f8f2">repetition</span> <span style="color: #f8f8f2">::</span><span style="color: #f92672">=</span> <span style="color: #f8f8f2">expression</span> <span style="color: #e6db74">&#39;repeat&#39;</span>
+			<span style="color: #f8f8f2">literal</span> <span style="color: #f8f8f2">::</span><span style="color: #f92672">=</span> <span style="color: #e6db74">&#39;a &lt;sup&gt;1&lt;/sup&gt; | &#39;</span><span style="color: #f8f8f2">b</span><span style="color: #e6db74">&#39; | &#39;</span><span style="color: #f8f8f2">c</span> <span style="color: #f92672">|</span> <span style="color: #f92672">...</span> <span style="color: #f8f8f2">{</span> <span style="color: #e6db74">&#39;a&#39;</span> | <span style="color: #e6db74">&#39;b&#39;</span> <span style="color: #f8f8f2">|</span> <span style="color: #e6db74">&#39;c&#39;</span> <span style="color: #f8f8f2">|</span> <span style="color: #f92672">...</span> <span style="color: #f8f8f2">}</span><span style="color: #f92672">*</span></pre>
+	<p>
+		<b>М</b>ежду этой грамматикой и той, что приведена в разделе «Мотивация», есть небольшие отличия. Мы слегка изменили синтаксис регулярных выражений, поскольку в Smalltalk символ * не может быть постфиксной операцией. Поэтому вместо него мы употребляем слово repeat. Например, регулярное выражение
+	</p>
+		<pre>
+			<span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">(</span> <span style="color: #e6db74">&#39; d o g &#39;</span> <span style="color: #f92672">|</span> <span style="color: #e6db74">&#39;cat &#39;</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">repeat</span> <span style="color: #f92672">&amp;</span> <span style="color: #e6db74">&#39;weather&#39;</span><span style="color: #f8f8f2">)</span></pre>
+	<p>
+		<br/>
+		соответствует входной строке 'dog dog cat weather'.
+	</p>
+	<p>
+		<b>Д</b>ля реализации программы сопоставления мы определим пять классов, упомянутых на стр. 237. В классе SequenceExpression есть переменные экземпляра expression1 и expression2 для хранения ссылок на потомков в дереве. Класс AlternationExpression хранит альтернативы в переменных экземпляра alternativel и alternative2, а класс RepetitionExpression - повторяемое выражение в переменной экземпляра repetition. В классе LiteralExpression есть переменная экземпляра components для хранения списка объектов (скорее всего, символов), представляющих литеральную строку, которая должна соответствовать входной строке.
+	</p>
+	<p>
+		<b>О</b>перация match: реализует интерпретатор регулярных выражений. В каждом из классов, входящих в абстрактное синтаксическое дерево, эта операция реализована. Ее аргументом является переменная inputState, описывающая текущее состояние процесса сопоставления, то есть уже прочитанную часть входной строки.
+	</p>
+	<p>
+		<b>Т</b>екущее состояние характеризуется множеством входных потоков, представляющим множество тех входных строк, которое регулярное выражение могло бы к настоящему моменту принять. (Это примерно то же, что регистрация всех состояний, в которых побывал бы эквивалентный конечный автомат, распознавший входной поток до данного места.)
+	</p>
+	<p>
+		<b>Т</b>екущее состояние наиболее важно для операции repeat. Например, регулярному выражению
+	</p>
+	<pre>
+			<span style="color: #e6db74">&#39;а&#39;</span> <span style="color: #f8f8f2">repeat</span></pre>
+		<p>интерпретатор сопоставил бы строки "а", "аа", "ааа" и т.д. А регулярному выражению</p>
+	<pre>
+		<span style="color: #e6db74">&#39;а&#39;</span> <span style="color: #f8f8f2">repeat</span> <span style="color: #f92672">&amp;</span> <span style="color: #e6db74">&#39;be&#39;</span></pre>
+		<p>строки " abc", " aabc", " aaabc" и т.д. Но при наличии регулярного выражения</p>
+	<pre>
+		<span style="color: #e6db74">&#39;а&#39;</span> <span style="color: #f8f8f2">repeat</span> <span style="color: #f92672">&amp;</span> <span style="color: #e6db74">&#39;abc&#39;</span></pre>
+	<p>сопоставление входной строки "aabc" с подвыражением " ' a ' repeat" дало бы два потока, один из которых соответствует одному входному символу, а другой - двум. Из них лишь поток, принявший один символ, может быть сопоставлен с остатком строки " abc".</p>
+	<p>
+		<b>Т</b>еперь рассмотрим определения match: для каждого класса, описывающего регулярное выражение. SequenceExpression производит сопоставление с каж дым подвыражением в определенной последовательности. Обычно потоки ввода не входят в его состояние input State.
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">match:</span> <span style="color: #f8f8f2">inputState</span>
+  	<span style="color: #f92672">^</span> <span style="color: #f8f8f2">expression2</span> <span style="color: #f8f8f2">match:</span> <span style="color: #f8f8f2">(expressionl</span> <span style="color: #f8f8f2">match:</span> <span style="color: #f8f8f2">inputState)</span><span style="color: #f92672">.</span></pre>
+	<p>
+		<b>A</b>lternationExpression возвращает результат, объединяющий состояния всех альтернатив. Вот определение match: для этого случая:
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">match:</span> <span style="color: #f8f8f2">inputState</span>
+  	<span style="color: #f92672">|</span> <span style="color: #f8f8f2">finalState</span> <span style="color: #f92672">|</span>
+  	<span style="color: #f8f8f2">finalState</span> <span style="color: #f92672">:=</span> <span style="color: #f8f8f2">alternative1</span> <span style="color: #f8f8f2">match</span><span style="color: #f92672">:</span>   <span style="color: #f8f8f2">inputState.</span>
+  	<span style="color: #f8f8f2">finalState</span> <span style="color: #f8f8f2">addAll</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">(alternative2</span> <span style="color: #f8f8f2">match</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">inputState).</span>
+  	<span style="color: #f92672">^</span> <span style="color: #f8f8f2">finalState</span></pre>
+	<p>
+		<b>О</b>перация match: для RepetitionExpression пытается найти максимальное количество состояний, допускающих сопоставление:
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">match:</span> <span style="color: #f8f8f2">inputState</span>
+  	<span style="color: #f92672">|</span> <span style="color: #f8f8f2">aState</span> <span style="color: #f8f8f2">finalState</span> <span style="color: #f92672">|</span>
+  	<span style="color: #f8f8f2">aState</span> <span style="color: #f92672">:=</span> <span style="color: #f8f8f2">inputState.</span>
+  	<span style="color: #f8f8f2">finalState</span> <span style="color: #f92672">:=</span> <span style="color: #f8f8f2">inputState</span> <span style="color: #f8f8f2">copy.</span>
+  	<span style="color: #f8f8f2">[aState</span> <span style="color: #f8f8f2">isEmpty]</span>
+    	<span style="color: #f8f8f2">whileFalse:</span>
+      	<span style="color: #f8f8f2">[aState</span> <span style="color: #f92672">:=</span> <span style="color: #f8f8f2">repetition</span> <span style="color: #f8f8f2">match</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">aState.</span>
+      	<span style="color: #f8f8f2">finalState</span> <span style="color: #f8f8f2">addAll</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">aState].</span>
+  	<span style="color: #f92672">^</span> <span style="color: #f8f8f2">finalState</span></pre>
+	<p>
+		<b>Н</b>а выходе этой операции мы обычно получаем больше состояний, чем на входе, поскольку RepetitionExpression может быть сопоставлено с одним, двумя или более вхождениями повторяющегося выражения во входную строку. В выходном состоянии представлены все возможные варианты, а решение о том, какое из состояний правильно, принимается последующими элементами регулярного выражения.
+	</p>
+	<p>
+		<b>Н</b>аконец, операция match: для LiteralExpression сравнивает свои компоненты с каждым возможным входным потоком и оставляет только те из них, для которых попытка завершилась удачно:
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">match:</span> <span style="color: #f8f8f2">inputState</span>
+	  <span style="color: #f8f8f2">I</span> <span style="color: #f8f8f2">finalState</span> <span style="color: #f8f8f2">tStream</span> <span style="color: #f8f8f2">I</span>
+	  <span style="color: #f8f8f2">finalState</span> <span style="color: #f92672">:=</span> <span style="color: #f8f8f2">Set</span> <span style="color: #66d9ef">new</span><span style="color: #f8f8f2">.</span>
+	  <span style="color: #f8f8f2">inputState</span>
+	    <span style="color: #f8f8f2">do:</span>
+	      <span style="color: #f8f8f2">[</span><span style="color: #f92672">:</span><span style="color: #f8f8f2">stream</span> <span style="color: #f8f8f2">I</span> <span style="color: #f8f8f2">tStream</span> <span style="color: #f92672">:=</span> <span style="color: #f8f8f2">stream</span> <span style="color: #f8f8f2">copy.</span>
+	        <span style="color: #f8f8f2">(tStream</span> <span style="color: #f8f8f2">nextAvailable</span><span style="color: #f92672">:</span>
+	          <span style="color: #f8f8f2">components</span> <span style="color: #f8f8f2">size</span>
+	        <span style="color: #f8f8f2">)</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">components</span>
+	          <span style="color: #f8f8f2">ifTrue:</span> <span style="color: #f8f8f2">[finalState</span> <span style="color: #f8f8f2">add</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">tStream]</span>
+	      <span style="color: #f8f8f2">].</span>
+	    <span style="color: #f92672">^</span> <span style="color: #f8f8f2">finalState</span></pre>
+	<p>
+		<b>С</b>ообщение next Available: выполняет смещение вперед по входному потоку. Это единственная операция match:, которая сдвигается по потоку. Обратите внимание: возвращаемое состояние содержит его копию, поэтому можно быть уверенным, что сопоставление с литералом никогда не изменяет входной поток. Это существенно, поскольку все альтернативы в Alternat ionExpression должны «видеть» одинаковые копии входного потока.
+	</p>
+	<p>
+		<b>Т</b>аким образом, мы определили классы, составляющие абстрактное синтаксическое дерево. Теперь опишем, как его построить. Вместо того чтобы создавать анализатор регулярных выражений, мы определим некоторые операции в классах RegularExpression, так что вычисление выражения языка Smalltalk приведет к созданию абстрактного синтаксического дерева для соответствующего регулярного выражения. Тем самым мы будем использовать встроенный компилятор Smalltalk, как если бы это был анализатор синтаксиса регулярных выражений.
+	</p>
+	<p>
+		<b>Д</b>ля построения дерева нам понадобятся операции "|", "repeat" и "&amp;" над регулярными выражениями. Определим эти операции в классе RegularExpression:
+	</p>
+	<pre>
+		<span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">aNode</span>
+	  <span style="color: #f92672">^</span> <span style="color: #f8f8f2">SequenceExpression</span> <span style="color: #66d9ef">new</span>
+	    <span style="color: #f8f8f2">expressionl:</span> <span style="color: #f8f8f2">self</span> <span style="color: #f8f8f2">expression2</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">aNode</span> <span style="color: #f8f8f2">asRExp</span>
+		<span style="color: #f8f8f2">repeat</span>
+		  <span style="color: #f92672">^</span> <span style="color: #f8f8f2">RepetitionExpression</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">repetition</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">self</span>
+		<span style="color: #f92672">|</span> <span style="color: #f8f8f2">aNode</span>
+		  <span style="color: #f92672">^</span> <span style="color: #f8f8f2">AlternationExpression</span> <span style="color: #66d9ef">new</span>
+		    <span style="color: #f8f8f2">alternativel:</span> <span style="color: #f8f8f2">self</span> <span style="color: #f8f8f2">alternative2</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">aNode</span> <span style="color: #f8f8f2">asRExp</span>
+		<span style="color: #f8f8f2">asRExp</span>
+		  <span style="color: #f92672">^</span> <span style="color: #f8f8f2">self</span></pre>
+	<p>
+		<b>О</b>перация asRExp преобразует литералы в RegularExpression. Следующие операции определены в классе String:
+	</p>
+	<pre>
+		<span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">aNode</span>
+	  <span style="color: #f92672">^</span> <span style="color: #f8f8f2">SequenceExpression</span> <span style="color: #66d9ef">new</span>
+	    <span style="color: #f8f8f2">expressionl:</span> <span style="color: #f8f8f2">self</span> <span style="color: #f8f8f2">asRExp</span> <span style="color: #f8f8f2">expression2</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">aNode</span> <span style="color: #f8f8f2">asRExp</span>
+		<span style="color: #f8f8f2">repeat</span>
+		  <span style="color: #f92672">^</span> <span style="color: #f8f8f2">RepetitionExpression</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">repetition</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">self</span>
+		<span style="color: #f92672">|</span> <span style="color: #f8f8f2">aNode</span>
+		  <span style="color: #f92672">^</span> <span style="color: #f8f8f2">AlternationExpression</span> <span style="color: #66d9ef">new</span>
+		    <span style="color: #f8f8f2">alternativel:</span> <span style="color: #f8f8f2">self</span> <span style="color: #f8f8f2">asRExp</span> <span style="color: #f8f8f2">alternative2</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">aNode</span> <span style="color: #f8f8f2">asRExp</span>
+		<span style="color: #f8f8f2">asRExp</span>
+		  <span style="color: #f92672">^</span> <span style="color: #f8f8f2">LiteralExpression</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">components</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">self</span></pre>
+	<p>
+		<b>Е</b>сли бы мы определили эти операции выше в иерархии классов, например SequenceableCollection в Smalltalk-80, IndexedCollection в Smalltalk/V, то они появились бы и в таких классах, как Array и OrderedCollection. Это позволило бы сопоставлять регулярные выражения с последовательностями объектов любого вида.
+	</p>
+	<p>
+		<b>В</b>торой пример &ndash; это система для манипулирования и вычисления булевых выражений, реализованная на C++. Терминальными символами в этом языке являются булевы переменные, то есть константы true и false. Нетерминальные символы представляют выражения, содержащие операторы and, or и not. Приведем определение грамматики: 	
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">BooleanExp</span> <span style="color: #f92672">::=</span> <span style="color: #f8f8f2">VariableExp</span> <span style="color: #f92672">|</span> <span style="color: #f8f8f2">Constant</span> <span style="color: #f92672">|</span> <span style="color: #f8f8f2">OrExp</span> <span style="color: #f8f8f2">I</span> <span style="color: #f8f8f2">AndExp</span> <span style="color: #f92672">|</span> <span style="color: #f8f8f2">NotExp</span> <span style="color: #f92672">|</span> <span style="color: #960050;">&#39;</span> <span style="color: #f8f8f2">(</span> <span style="color: #960050; ">&#39;</span> <span style="color: #f8f8f2">BooleanExp</span> <span style="color: #960050; ">&#39;</span> <span style="color: #f8f8f2">)</span> <span style="color: #960050; ">&#39;</span>
+		<span style="color: #f8f8f2">AndExp</span> <span style="color: #f92672">::=</span> <span style="color: #f8f8f2">BooleanExp</span> <span style="color: #960050;">&#39;</span><span style="color: #f8f8f2">and</span><span style="color: #960050;">&#39;</span> <span style="color: #f8f8f2">BooleanExp</span>
+		<span style="color: #f8f8f2">OrExp</span> <span style="color: #f92672">:</span> <span style="color: #f92672">:</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">BooleanExp</span> <span style="color: #960050;">&#39;</span> <span style="color: #f8f8f2">or</span> <span style="color: #960050;">&#39;</span> <span style="color: #f8f8f2">BooleanExp</span>
+		<span style="color: #f8f8f2">NotExp</span> <span style="color: #f92672">::=</span> <span style="color: #960050;">&#39;</span><span style="color: #f8f8f2">not</span><span style="color: #960050;">&#39;</span> <span style="color: #f8f8f2">BooleanExp</span>
+		<span style="color: #f8f8f2">Constant</span> <span style="color: #f92672">::=</span> <span style="color: #960050;">&#39;</span><span style="color: #f8f8f2">true</span><span style="color: #960050;">&#39;</span> <span style="color: #f92672">|</span> <span style="color: #960050;">&#39;</span><span style="color: #f8f8f2">false</span> <span style="color: #ae81ff">1</span>
+		<span style="color: #f8f8f2">VariableExp</span> <span style="color: #f92672">::=</span> <span style="color: #e6db74">&#39;A&#39;</span> <span style="color: #f92672">|</span> <span style="color: #e6db74">&#39;B&#39;</span> <span style="color: #f92672">|</span> <span style="color: #f8f8f2">...</span> <span style="color: #f92672">|</span><span style="color: #f8f8f2">.</span><span style="color: #e6db74">&#39;X&#39;</span> <span style="color: #f92672">|</span> <span style="color: #960050;">&#39;</span><span style="color: #f8f8f2">Y</span> <span style="color: #ae81ff">1</span> <span style="color: #f8f8f2">I</span> <span style="color: #e6db74">&#39;Z&#39;</span></pre>
+	<p>
+		<b>О</b>пределим две операции над булевыми выражениями. Первая - Evaluate - вычисляет выражение в контексте, где каждой переменной присваивается истинное или ложное значение. Вторая - Replace - порождает новое булево выражение, заменяя выражением некоторую переменную. Эта операция демонстрирует, что паттерн интерпретатор можно использовать не только для вычисления выражений; в данном случае он манипулирует самим выражением.
+	</p>
+	<p>
+		<b>З</b>десь мы подробно опишем только классы BooleanExp, VariableExp и AndExp. Классы OrExp и NotExp аналогичны классу AndExp. Класс Constant представляет булевы константы.
+	</p>
+	<p>
+		<b>В</b> классе BooleanExp определен интерфейс всех классов, которые описывают булевы выражения:
+	</p>
+	<pre>
+		<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">BooleanExp</span> <span style="color: #f8f8f2">{</span>
+		<span style="color: #f8f8f2">public:</span>
+		  <span style="color: #f8f8f2">BooleanExp</span> <span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #f92672">-</span><span style="color: #f8f8f2">BooleanExp</span> <span style="color: #f8f8f2">();</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">Evaluate</span> <span style="color: #f8f8f2">(Contextk)</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">Replace</span> <span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span>    <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">)</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">Copy</span> <span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">)</span> <span style="color: #66d9ef">const</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">};</span></pre>
+	<p>
+		<b>К</b>ласс Context определяет отображение между переменными и булевыми значениями, которые в C++ представляются константами true и false. Интерфейс этого класса следующий:
+	</p>
+	<pre>
+		<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Context</span> <span style="color: #f8f8f2">{</span>
+		<span style="color: #f8f8f2">public:</span>
+		 <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">Lookup</span> <span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+		 <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Assign</span> <span style="color: #f8f8f2">(VariableExp</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">,</span> <span style="color: #66d9ef">bool</span><span style="color: #f8f8f2">);</span>
+		<span style="color: #f8f8f2">};</span></pre>
+	<p>
+		<b>К</b>ласс VariableExp представляет именованную переменную:
+	</p>
+	<pre>
+		<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">VariableExp</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">BooleanExp</span> <span style="color: #f8f8f2">{</span>
+		<span style="color: #f8f8f2">public:</span>
+		  <span style="color: #f8f8f2">VariableExp(</span><span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #f92672">-</span><span style="color: #f8f8f2">VariableExp();</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">bool</span> <span style="color: #a6e22e">Evaluate</span><span style="color: #f8f8f2">(Contexts);</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #a6e22e">Replace</span><span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">);</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">Copy()</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">private:</span>
+		  <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_name;</span>
+		<span style="color: #f8f8f2">};</span></pre>
+	<p>
+		<b>У</b>прощая задачу, мы игнорируем приоритеты операторов и предполагаем, что их учет возложен на объект, строящий дерево разбора.
+	</p>
+	<p>
+		<b>К</b>онструктор класса принимает в качестве аргумента имя переменной:
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">VariableExp</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">VariableExp</span> <span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">name)</span> <span style="color: #f8f8f2">{</span>
+		  <span style="color: #f8f8f2">_name</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">strdup(name);</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<p>
+		<b>В</b>ычисление переменной возвращает ее значение в текущем контексте:
+	</p>
+	<pre>
+		<span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">VariableExp</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Evaluate</span> <span style="color: #f8f8f2">(Contexts</span> <span style="color: #f8f8f2">aContext)</span> <span style="color: #f8f8f2">{</span>
+  		<span style="color: #66d9ef">return</span> <span style="color: #f8f8f2">aContext.Lookup(_name);</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<p>
+		<b>К</b>опирование переменной возвращает новый объект класса VariableExp:
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">VariableExp</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Copy</span> <span style="color: #f8f8f2">()</span> <span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">{</span>
+		  <span style="color: #66d9ef">return</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">VariableExp(_name);</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<p>
+		<b>Ч</b>тобы заменить переменную выражением, мы сначала проверяем, что у переменной то же имя, что было передано ранее в качестве аргумента:
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">VariableExp</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Replace</span> <span style="color: #f8f8f2">(</span>
+		  <span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">name,</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">exp</span>
+		<span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span>
+		  <span style="color: #66d9ef">if</span> <span style="color: #f8f8f2">(strcmptname,</span> <span style="color: #f8f8f2">_name)</span> <span style="color: #f92672">==</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span>
+		    <span style="color: #66d9ef">return</span> <span style="color: #f8f8f2">exp.Copy();</span>
+		  <span style="color: #f8f8f2">}</span> <span style="color: #66d9ef">else</span> <span style="color: #f8f8f2">{</span>
+		    <span style="color: #66d9ef">return</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">VariableExp(_name);</span>
+		<span style="color: #f8f8f2">}</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<p>
+		<b>К</b>ласс AndExp представляет выражение, получающееся в результате применения операции логического И к двум булевым выражениям:
+	</p>
+	<pre>
+		<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">AndExp</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">BooleanExp</span> <span style="color: #f8f8f2">{</span>
+		<span style="color: #f8f8f2">public:</span>
+		  <span style="color: #f8f8f2">AndExp(BooleanExp</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #f92672">-</span><span style="color: #f8f8f2">AndExp();</span><span style="color: #960050;">•</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">Evaluate(Contexts);</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #a6e22e">Replace</span><span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">BooleanExpS);</span>
+		  <span style="color: #66d9ef">virtual</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">CopyO</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">private:</span>
+		  <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_operandl;</span>
+		  <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_operand2;</span>
+		<span style="color: #f8f8f2">};</span>
+		<span style="color: #f8f8f2">AndExp</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">AndExp</span> <span style="color: #f8f8f2">(BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">opl</span> <span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">op2</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span>
+		  <span style="color: #f8f8f2">_operandl</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">opl;</span>
+		  <span style="color: #f8f8f2">_operand2</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">op2;</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<p>
+		<b>П</b>ри решении AndExp вычисляются его операнды и результат применения к ним операции логического И возвращается:
+	</p>
+	<pre>
+		<span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">AndExp</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Evaluate</span> <span style="color: #f8f8f2">(Context</span><span style="color: #f92672">^</span> <span style="color: #f8f8f2">aContext)</span> <span style="color: #f8f8f2">{</span>
+		  <span style="color: #66d9ef">return</span>
+		    <span style="color: #f8f8f2">_operandl</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Evaluate</span> <span style="color: #f8f8f2">(aContext)</span> <span style="color: #f92672">&amp;&amp;</span>
+		    <span style="color: #f8f8f2">_operand2</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Evaluate</span> <span style="color: #f8f8f2">(aContext)</span> <span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">}</span>
+		<span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">AndExp</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Replace</span> <span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">name,</span> <span style="color: #f8f8f2">BooleanExpk</span> <span style="color: #f8f8f2">exp)</span> <span style="color: #f8f8f2">{</span>
+		  <span style="color: #66d9ef">return</span>
+		    <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">AndExp(</span>
+		      <span style="color: #f8f8f2">_operandl</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Replace(name,</span> <span style="color: #f8f8f2">exp),</span>
+		      <span style="color: #f8f8f2">_operand2</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Replace(name,</span> <span style="color: #f8f8f2">exp)</span>
+		    <span style="color: #f8f8f2">);</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<p>
+		<b>О</b>пределим теперь булево выражение
+	</p>
+	<pre>(true and x) or (у and (not x ) )</pre>
+	<p>
+		и вычислим его для некоторых конкретных значений булевых переменных х и у:
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">expression;</span>
+		<span style="color: #f8f8f2">Context</span> <span style="color: #f8f8f2">context;</span>
+		<span style="color: #f8f8f2">VariableExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">x</span> <span style="color: #f92672">=</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">V</span> <span style="color: #f8f8f2">a</span> <span style="color: #f8f8f2">r</span> <span style="color: #f8f8f2">i</span> <span style="color: #f8f8f2">a</span> <span style="color: #f8f8f2">b</span> <span style="color: #f8f8f2">l</span> <span style="color: #f8f8f2">e</span> <span style="color: #f8f8f2">E</span> <span style="color: #f8f8f2">x</span> <span style="color: #f8f8f2">p</span> <span style="color: #f8f8f2">(</span> <span style="color: #e6db74">&quot; X &quot;</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">VariableExp</span><span style="color: #f92672">*</span> у <span style="color: #f92672">=</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">V</span> <span style="color: #f8f8f2">a</span> <span style="color: #f8f8f2">r</span> <span style="color: #f8f8f2">i</span> <span style="color: #f8f8f2">a</span> <span style="color: #f8f8f2">b</span> <span style="color: #f8f8f2">l</span> <span style="color: #f8f8f2">e</span> <span style="color: #f8f8f2">E</span> <span style="color: #f8f8f2">x</span> <span style="color: #f8f8f2">p</span> <span style="color: #f8f8f2">(</span> <span style="color: #e6db74">&quot; Y &quot;</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">expression</span> <span style="color: #f92672">=</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">OrExpt</span>
+		  <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">AndExp(</span><span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">Constant(true),</span>
+		  <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">AndExp(y,</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">NotExp(x))</span>
+		<span style="color: #f8f8f2">x),</span>
+		<span style="color: #f8f8f2">);</span>
+		<span style="color: #f8f8f2">context.Assign(x,</span> <span style="color: #f8f8f2">f</span> <span style="color: #f8f8f2">a</span> <span style="color: #f8f8f2">l</span> <span style="color: #f8f8f2">s</span> <span style="color: #f8f8f2">e</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">context.Assign(y,</span> <span style="color: #f8f8f2">true);</span>
+		<span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">result</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">expression</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Evaluate(context);</span></pre>
+	<p>
+		<b>С</b> такими значениями х и у выражение равно true. Чтобы вычислить его при других значениях переменных, достаточно просто изменить контекст.
+	</p>
+	<p>
+		<b>И</b> наконец, мы можем заменить переменную у новым выражением и повторить вычисление:
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">VariableExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">z</span> <span style="color: #f92672">=</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">VariableExpf</span><span style="color: #e6db74">&quot;Z&quot;</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">NotExp</span> <span style="color: #a6e22e">not_z</span><span style="color: #f8f8f2">(z)</span> <span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">BooleanExp</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">replacement</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">expression</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Replace(</span><span style="color: #e6db74">&quot;Y&quot;</span><span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">not_z);</span>
+		<span style="color: #f8f8f2">context.Assign(z,</span> <span style="color: #f8f8f2">true);</span>
+		<span style="color: #f8f8f2">result</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">replacement</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Evaluate(context);</span>
+		  <span style="color: #66d9ef">new</span> <span style="color: #a6e22e">AndExp</span><span style="color: #f8f8f2">(y,</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">NotExp(x))</span>
+		<span style="color: #f8f8f2">x),</span>
+		<span style="color: #f8f8f2">);</span>
+		<span style="color: #f8f8f2">context.Assign(x,</span> <span style="color: #f8f8f2">f</span> <span style="color: #f8f8f2">a</span> <span style="color: #f8f8f2">l</span> <span style="color: #f8f8f2">s</span> <span style="color: #f8f8f2">e</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">context.Assign(y,</span> <span style="color: #f8f8f2">true);</span>
+		<span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">result</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">expression</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Evaluate(context);</span></pre>
+	<p>
+		<b>Н</b>а этом примере проиллюстрирована важная особенность паттерна интерпретатор: «интерпретация» предложения может означать самые разные действия. Из трех операций, определенных в классе BooleanExp, Evaluate наиболее близка к нашему интуитивному представлению о том, что интерпретатор должен интерпретировать программу или выражение и возвращать простой результат.
+	</p>
+	<p>
+		<b>Н</b>о и операцию Replace можно считать интерпретатором. Его контекстом является имя заменяемой переменной и подставляемое вместо него выражение, а результатом служит новое выражение. Даже операцию Сору допустимо рассматривать как интерпретатор с пустым контекстом. Трактовка операций Replace и Сору как интерпретаторов может показаться странной, поскольку это всего лишь базовые операции над деревом. Примеры в описании паттерна посетитель демонстрируют, что все три операции разрешается вынести в отдельный объект-посетитель «интерпретатор», тогда аналогия станет более очевидной.
+	</p>
+	<p>
+		<b>П</b>аттерн интерпретатор &ndash; это нечто большее, чем распределение некоторой операции по иерархии классов, составленной с помощью паттерна компоновщик. Мы рассматриваем операцию Evaluate как интерпретатор, поскольку иерархию классов BooleanExp мыслим себе как представление некоторого языка. Если бы у нас была аналогичная иерархия для представления агрегатов автомобиля, то вряд ли мы стали бы считать такие операции, как Weight (вес) и Сору (копирование), интерпретаторами, несмотря на то что они распределены по всей иерархии классов, - просто мы не воспринимаем агрегаты автомобиля как язык. Тут все дело в точке зрения: опубликуй мы грамматику агрегатов автомобиля, операции над ними можно было трактовать как способы интерпретации соответствующего языка.
+	</p>
+	<h2>Известные применения</h2>
+	<p>
+		<b>П</b>аттерн интерпретатор широко используется в компиляторах, реализованных с помощью объектно-ориентированных языков, например в компиляторах Smalltalk. В языке SPECTalk этот паттерн применяется для интерпретации форматов входных файлов [Sza92]. В библиотеке QOCA для разрешения ограничений он применяется для вычисления ограничений [HHMV92].
+	</p>
+	<p>
+		<b>Е</b>сли рассматривать данный паттерн в самом общем виде (то есть как операцию, распределенную по иерархии классов, основанной на паттерне компоновщик), то почти любое применение компоновщика содержит и интерпретатор. Но применять паттерн интерпретатор лучше в тех случаях, когда иерархию классов можно представлять себе как описание языка.
+	</p>
+	<h2>Родственные паттерны</h2>
+	<p>
+		<b>К</b>омпоновщик: абстрактное синтаксическое дерево - это пример применения паттерна компоновщик.
+	</p>
+	<p>
+		<b>П</b>риспособленец показывает варианты разделения терминальных символов в абстрактном синтаксическом дереве.
+	</p>
+	<p>
+		<b>И</b>тератор: интерпретатор может пользоваться итератором для обхода структуры.
+	</p>
+	<p>
+		<b>П</b>осетителя можно использовать для инкапсуляции в одном классе поведения каждого узла абстрактного синтаксического дерева.
+	</p>
+	</section>
+		<footer>
+						<div class="copy">
+							<h3> Made by El_paso - Rivne 2016</h3>
+						</div> 
+		</footer>
+	</main>
+</body>
+</html>

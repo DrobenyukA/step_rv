@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<meta name=viewport content="width=device-width, initial-scale=1">	
+	<title>Iterator - pattern</title>
+	<link rel="stylesheet" href="../css/reset.css"/>
+	<link rel="stylesheet" href="../css/peter_page_style.css"/>
+</head>
+<body>
+		<main class="main-page"> 
+			<header> 
+				<h1><span>Паттерн</span> <b>Iterator</b></h1>
+			</header>
+				<section>
+					<div class="buttons">
+						<div class="button">
+							<a href="../index.html">
+							<h4>home</h4>
+							</a>
+						</div>
+					</div>
+					<div class="arrow">
+						<a href="#top" title="go on top"></a>
+					</div>
+	<h2>Название и классификация паттерна</h2>
+	<p><b>Итератор</b> &ndash; паттерн поведения объектов.</p>
+	<h2>Назначение</h2>
+	<p>
+		<b>П</b>редоставляет способ последовательного доступа ко всем элементам составного объекта, не раскрывая его внутреннего представления.
+	</p>
+	<h2>Известен также под именем</h2>
+	<p>
+		<b>Cursor</b> (курсор).
+	</p>
+	<h2>Мотивация</h2>
+	<p>
+		<b>С</b>оставной объект, скажем список, должен предоставлять способ доступа к своим элементам, не раскрывая их внутреннюю структуру. Более того, иногда требуется обходить список по-разному, в зависимости от решаемой задачи. Но вряд ли вы захотите засорять интерфейс класса List операциями для различных вариантов обхода, даже если все их можно предвидеть заранее. Кроме того, иногда нужно, чтобы в один и тот же момент было определено несколько активных обходов списка.
+	</p>
+	<p>
+		<b>В</b>се это позволяет сделать паттерн итератор. Основная его идея в том, чтобы за доступ к элементам и способ обхода отвечал не сам список, а отдельный объектитератор. В классе Iterator определен интерфейс для доступа к элементам списка. Объект этого класса отслеживает текущий элемент, то есть он располагает информацией, какие элементы уже посещались.
+	</p>
+	<p>
+		<b>Н</b>апример, класс List мог бы предусмотреть класс Listlterator.
+	</p>
+	<img src="../img/pages/4/p_it_1.png" alt="scheme"/>
+	<p>
+		<b>П</b>режде чем создавать экземпляр класса Listlterator, необходимо иметь список, подлежащий обходу. С объектом L i s t l t e r a t o r вы можете последовательно посетить все элементы списка. Операция Current It em возвращает текущий элемент списка, операция First инициализирует текущий элемент первым элементом списка, Next делает текущим следующий элемент, a IsDone проверяет, не оказались ли мы за последним элементом, если да, то обход завершен.
+	</p>
+	<p>
+		<b>О</b>тделение механизма обхода от объекта List позволяет определять итераторы, реализующие различные стратегии обхода, не перечисляя их в интерфейсе класса List. Например, FilteringListlterator мог бы предоставлять доступ только к тем элементам, которые удовлетворяют условиям фильтрации.
+	</p>
+	<p>
+		<b>З</b>аметим: между итератором и списком имеется тесная связь, клиент должен иметь информацию, что он обходит именно <em>список</em>, а не какую-то другую агрегированную структуру. Поэтому клиент привязан к конкретному способу агрегирования. Было бы лучше, если бы мы могли изменять класс агрегата, не трогая код клиента. Это можно сделать, обобщив концепцию итератора и рассмотрев <em>полиморфную итерацию</em>.
+	</p>
+	<p>
+		<b>Н</b>апример, предположим, что у нас есть еще класс SkipList, реализующий список. Список с пропусками (skiplist) [Pug90] - это вероятностная структура данных, по характеристикам напоминающая сбалансированное дерево. Нам нужно научиться писать код, способный работать с объектами как класса List, так и класса SkipList.
+	</p>
+	<p>
+		<b>О</b>пределим класс AbstractList, в котором объявлен общий интерфейс для манипулирования списками. Еще нам понадобится абстрактный класс Iterator, определяющий общий интерфейс итерации. Затем мы смогли бы определить конкретные подклассы класса Iterator для различных реализаций списка. В результате механизм итерации оказывается не зависящим от конкретных агрегированных классов.
+	</p>
+	<img src="../img/pages/4/p_it_2.png" alt="scheme"/>
+	<p>
+		<b>О</b>стается понять, как создается итератор. Поскольку мы хотим написать код, не зависящий от конкретных подклассов List, то нельзя просто инстанцировать конкретный класс. Вместо этого мы поручим самим объектам-спискам создавать для себя подходящие итераторы, вот почему потребуется операция Createlterator, посредством которой клиенты смогут запрашивать объект-итератор.
+	</p>
+	<p>
+		<b>C</b>reatelterator - это пример использования паттерна фабричный метод. В данном случае он служит для того, чтобы клиент мог запросить у объекта-списка подходящий итератор. Применение фабричного метода приводит к появлению двух иерархий классов - одной для списков, другой для итераторов. Фабричный метод Createlterator «связывает» эти две иерархии.
+	</p>
+	<h2>Применимость</h2>
+	<p>
+		<b>И</b>спользуйте паттерн итератор:
+	</p>
+	<ul>
+		<li>
+			для доступа к содержимому агрегированных объектов без раскрытия их внутреннего представления;
+		</li>
+		<li>
+			для поддержки нескольких активных обходов одного и того же агрегированного объекта;
+		</li>
+		<li>
+			для предоставления единообразного интерфейса с целью обхода различных агрегированных структур (то есть для поддержки полиморфной итерации).
+		</li>
+	</ul>
+	<h2>Структура</h2>
+	<img src="../img/pages/4/p_it_3.png"  alt="scheme"/>
+	<h2>Участники</h2>
+	<ul>
+		<li>
+			<b>Iterator</b> &ndash; итератор:
+			<ul class="line">
+				<li>
+					определяет интерфейс для доступа и обхода элементов;
+				</li>
+			</ul>
+		</li>
+		<li>
+			<b>Concretelterator</b> &ndash; конкретный итератор:
+			<ul class="line">
+				<li>реализует интерфейс класса Iterator;</li>
+				<li>следит за текущей позицией при обходе агрегата;</li>
+			</ul>
+		</li>
+		<li>
+			<b>Aggregate</b> &ndash; агрегат:
+			<ul class="line">
+				<li>определяет интерфейс для создания объекта-итератора;</li>
+			</ul>
+		</li>
+		<li>
+			<b>ConcreteAggregate</b> &ndash; конкретный агрегат:
+			<ul class="line">
+				<li>реализует интерфейс создания итератора и возвращает экземпляр подходящего класса Concretelterator.</li>
+			</ul>
+		</li>
+	</ul>
+	<h2>Отношения</h2>
+	<p>
+		<b>C</b>oncretelterator отслеживает текущий объект в агрегате и может вычислить идущий за ним.
+	</p>
+	<h2>Результаты</h2>
+	<p>
+		<b>У</b> паттерна итератор есть следующие важные особенности:
+	</p>
+	<ul>
+		<li>
+			<em>поддерживает различные виды обхода агрегата.</em> Сложные агрегаты можно обходить по-разному. Например, для генерации кода и семантических проверок нужно обходить деревья синтаксического разбора. Генератор кода может об ходить дерево во внутреннем или прямом порядке. Итераторы упрощают изменение алгоритма обхода - достаточно просто заменить один экземпляр итератора другим. Для поддержки новых видов обхода можно определить и подклассы класса Iterator ;
+		</li>
+		<li>
+			<em>итераторы упрощают интерфейс класса Aggregate.</em> Наличие интерфейса для обхода в классе Iterator делает излишним дублирование этого интерфейса в классе Aggregate. Тем самым интерфейс агрегата упрощается;
+		</li>
+		<li>
+			<em>одновременно для данного агрегата может быть активно несколько обходов.</em> Итератор следит за инкапсулированным в нем самом состоянием обхода. Поэтому одновременно разрешается осуществлять несколько обходов агрегата.
+		</li>
+	</ul>
+	<h2>Реализация</h2>
+	<p>
+		<b>С</b>уществует множество вариантов реализации итератора. Ниже перечислены наиболее употребительные. Решение о том, какой способ выбрать, часто зависит от управляющих структур, поддерживаемых языком программирования. Некоторые языки (например, CLU [LG86]) даже поддерживают данный паттерн напрямую.
+	</p>
+	<ul>
+		<li>
+			<em>какой участник управляет итерацией.</em> Важнейший вопрос состоит в том, что управляет итерацией: сам итератор или клиент, который им пользуется. Если итерацией управляет клиент, то итератор называется <em>внешним</em>, в противном случае &ndash; <em>внутренним</em>. Клиенты, применяющие внешний итератор, должны явно запрашивать у итератора следующий элемент, чтобы двигаться дальше по агрегату. Напротив, в случае внутреннего итератора клиент передает итератору некоторую операцию, а итератор уже сам применяет эту операцию к каждому посещенному во время обхода элементу агрегата. Внешние итераторы обладают большей гибкостью, чем внутренние. Например, сравнить две коллекции на равенство с помощью внешнего итератора очень легко, а с помощью внутреннего &ndash; практически невозможно. Слабые стороны внутренних итераторов наиболее отчетливо проявляются в таких языках, как C++, где нет анонимных функций, замыканий (closure) и продолжений (continuation), как в Smalltalk или CLOS. Но, с другой стороны, внутренние итераторы проще в использовании, поскольку они вместо вас определяют логику обхода;
+		</li>
+		<li>
+			<em>что определяет алгоритм обхода.</em> Алгоритм обхода можно определить не только в итераторе. Его может определить сам агрегат и использовать итератор только для хранения состояния итерации. Такого рода итератор мы называем <em>курсором</em>, поскольку он всего лишь указывает на текущую позицию в агрегате. Клиент вызывает операцию Next агрегата, передавая ей курсор в качестве аргумента. Операция же Next изменяет состояние курсора. Если за алгоритм обхода отвечает итератор, то для одного и того же агрега та можно использовать разные алгоритмы итерации, и, кроме того, проще применить один алгоритм к разным агрегатам. С другой стороны, алгорит му обхода может понадобиться доступ к закрытым переменным агрегата. Если это так, то перенос алгоритма в итератор нарушает инкапсуляцию аг регата;
+		</li>
+		<li>
+			<em>насколько итератор устойчив.</em> Модификация агрегата в то время, как со вершается его обход, может оказаться опасной. Если при этом добавляются или удаляются элементы, то не исключено, что некоторый элемент будет по сещен дважды или вообще ни разу. Простое решение - скопировать агрегат и обходить копию, но обычно это слишком дорого.<br/>
+			<em>Устойчивый итератор</em> (robust) гарантирует, что ни вставки, на удаления не помешают обходу, причем достигается это без копирования агрегата. Есть много способов реализации устойчивых итераторов. В большинстве из них итератор регистрируется в агрегате. При вставке или удалении агрегат либо подправляет внутреннее состояние всех созданных им итераторов, либо организует внутреннюю информацию так, чтобы обход выполнялся правильно.<br/>
+			В работе Томаса Кофлера (Thomas Kofler) [Kof93] приводится подробное обсуждение реализации итераторов в каркасе ЕТ++. Роберт Мюррей (Robert Murray) [МигЭЗ] описывает реализацию устойчивых итераторов для класса L i s t из библиотеки USL Standard Components;
+		</li>
+		<li>
+			<em>дополнительные операции итератора.</em> Минимальный интерфейс класса Iterator состоит из операций First, Next, IsDone и Currentltem. Но могут оказаться полезными и некоторые дополнительные операции. Например, упорядоченные агрегаты могут предоставлять операцию Previous, позиционирующую итератор на предыдущий элемент. Для отсортированных или индексированных коллекций интерес представляет операция SkipTo, которая позиционирует итератор на объект, удовлетворяющий некоторому критерию;
+		</li>
+		<li>
+			<em>использование полиморфных итераторов в C++.</em> С полиморфными итерато рами связаны определенные накладные расходы. Необходимо, чтобы объект итератор создавался в динамической памяти фабричным методом. Поэтому использовать их стоит только тогда, когда есть необходимость в полимор физме. В противном случае применяйте конкретные итераторы, которые вполне можно распределять в стеке.<br/>
+			У полиморфных итераторов есть и еще один недостаток: за их удаление отвечает клиент. Здесь открывается большой простор для ошибок, так как очень легко забыть об освобождении распределенного из кучи объекта-итератора после завершения работы с ним. Особенно велика вероятность этого, если у операции есть несколько точек выхода. А в случае возбуждения исключения память, занимаемая объектом-итератором, вообще никогда не будет освобождена.<br/>
+			Эту ситуацию помогает исправить паттерн заместитель. Вместо настоящего итератора мы используем его заместителя, память для которого выделена в стеке. Заместитель уничтожает итератор в своем деструкторе. Поэтому, как только заместитель выходит из области действия, вместе с ним уничтожается и настоящий итератор. Заместитель гарантирует выполнение надлежащей очистки даже при возникновении исключений. Это пример применения хорошо известной в C++ техники, которая называется «выделение ресурса - это инициализация» [ES90]. В разделе «Пример кода» она проиллюстрирована подробнее;
+		</li>
+		<li>
+			<em>итераторы могут иметь привилегированный доступ.</em> Итератор можно рассматривать как расширение создавший его агрегат. Итератор и агрегат тесно связаны. В C++ такое отношение можно выразить, сделав итератор другом своего агрегата. Тогда не нужно определять в агрегате операции, единственная цель которых - позволить итераторам эффективно выполнить обход.<br/>
+			Однако наличие такого привилегированного доступа может затруднить определение новых способов обхода, так как потребуется изменить интерфейс агрегата, добавив в него нового друга. Для того чтобы решить эту проблему, класс Iterator может включать защищенные операции для доступа к важным, но не являющимся открытыми членам агрегата. Подклассы класса Iterator (и только его подклассы) могут воспользоваться этими защищенными операциями для получения привилегированного доступа к агрегату;
+		</li>
+		<li>
+			<em>итераторы для составных объектов.</em> Реализовать внешние агрегаты для рекурсивно агрегированных структур (таких, например, которые возникают в результате применения паттерна компоновщик) может оказаться затруднительно, поскольку описание положения в структуре иногда охватывает несколько уровней вложенности. Поэтому, чтобы отследить позицию текущего объекта, внешний итератор должен хранить путь через составной объект Composite. Иногда проще воспользоваться внутренним итератором. Он может запомнить текущую позицию, рекурсивно вызывая себя самого, так что путь будет неявно храниться в стеке вызовов.<br/>
+			Если узлы составного объекта Composite имеют интерфейс для перемещения от узла к его братьям, родителям и потомкам, то лучшее решение дает итератор курсорного типа. Курсору нужно следить только за текущим узлом, а для обхода составного объекта он может положиться на интерфейс этого узла.<br/>
+			Составные объекты часто нужно обходить несколькими способами. Самые распространенные - это обход в прямом, обратном и внутреннем порядке, а также обход в ширину. Каждый вид обхода можно поддержать отдельным итератором;
+		</li>
+		<li>
+			<em>пустые итераторы.</em> Пустой итератор Nulllterator - это вырожденный итератор, полезный при обработке граничных условий. По определению, N u l l l t e r a t o r всегда считает, что обход завершен, то есть его операция IsDone неизменно возвращает истину. Применение пустого итератора может упростить обход древовидных структур (например, объектов Composite). В каждой точке обхода мы запрашиваем у текущего элемента итератор для его потомков. Элементы-агрегаты, как обычно, возвращают конкретный итератор. Но листовые элементы возвращают экземпляр Nulllterator. Это позволяет реализовать обход всей структуры единообразно.
+		</li>
+	</ul>
+	<h2>Пример кода</h2>
+	<p>
+		<b>Р</b>ассмотрим простой класс списка List, входящего в нашу базовую библиотеку (см. приложение С) и две реализации класса Iterator: одну для обхода списка от начала к концу, а другую - от конца к началу (в базовой библиотеке поддержан только первый способ). Затем мы покажем, как пользоваться этими итераторами и как избежать зависимости от конкретной реализации. После этого изменим дизайн, дабы гарантировать корректное удаление итераторов. А в последнем примере мы проиллюстрируем внутренний итератор и сравним его с внешним.
+	</p>
+	<ul>
+		<li>
+			<em>интерфейсы классов List и Iterator.</em> Сначала обсудим ту часть интерфейса класса List, которая имеет отношение к реализации итераторов. Полный интерфейс см. в приложении С:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">List</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #f8f8f2">public:</span>
+				  <span style="color: #f8f8f2">List(</span><span style="color: #66d9ef">long</span> <span style="color: #f8f8f2">size</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">DEFAULT_LIST_CAPACITY);</span>
+				  <span style="color: #66d9ef">long</span> <span style="color: #f8f8f2">Count()</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #f8f8f2">Item</span><span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">Get(</span><span style="color: #66d9ef">long</span> <span style="color: #f8f8f2">index)</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #75715e">// ...</span>
+				<span style="color: #f8f8f2">};</span></pre>
+			В открытом интерфейсе класса List предусмотрен эффективный способ поддержки итераций. Его достаточно для реализации обоих видов обхода. Поэтому нет необходимости предоставлять итераторам привилегированный доступ к внутренней структуре данных. Иными словами, классы итераторов не являются друзьями класса List. Определим абстрактный класс Iterator, в котором будет объявлен интерфейс итератора:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Iterator</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #f8f8f2">public:</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">First()</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">Next()</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">IsDoneO</span> <span style="color: #66d9ef">const</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #f8f8f2">Item</span> <span style="color: #f8f8f2">Currentltemf)</span> <span style="color: #66d9ef">const</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">protected:</span>
+				  <span style="color: #f8f8f2">Iterator));</span>
+				<span style="color: #f8f8f2">};</span></pre>
+		</li>
+		<li>
+			<em>реализации подклассов класса Iterator.</em> Класс List Iterator является подклассом Iterator:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Listlterator</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">Iterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #f8f8f2">public:</span>
+				  <span style="color: #f8f8f2">Listlterator(</span><span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">aList);</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">First</span><span style="color: #f8f8f2">();</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Next</span><span style="color: #f8f8f2">();</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">IsDoneO</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #f8f8f2">Item</span> <span style="color: #f8f8f2">CurrentltemO</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">private:</span>
+				  <span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">_list;</span>
+				  <span style="color: #66d9ef">long</span> <span style="color: #f8f8f2">_current;</span>
+				<span style="color: #f8f8f2">};</span></pre>
+			Реализация класса Listlterator не вызывает затруднений. В нем хранится экземпляр List и индекс _current, указывающий текущую позицию в списке:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #f8f8f2">Listlterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">ltem</span><span style="color: #f92672">&gt;::</span><span style="color: #f8f8f2">Listlterator</span> <span style="color: #f8f8f2">(</span>
+				  <span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">aList</span>
+				  <span style="color: #f8f8f2">)</span> <span style="color: #f92672">:</span> <span style="color: #f8f8f2">_list(aList),</span> <span style="color: #f8f8f2">_current(</span><span style="color: #ae81ff">0</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			Операция First позиционирует итератор на первый элемент списка:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">Listlterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">ltem</span><span style="color: #f92672">&gt;::</span><span style="color: #f8f8f2">First</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+				  <span style="color: #f8f8f2">_current</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			Операция Next делает текущим следующий элемент:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">Listlterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">ltem</span><span style="color: #f92672">&gt;::</span><span style="color: #f8f8f2">Next</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+				  <span style="color: #f8f8f2">_current</span><span style="color: #f92672">++</span><span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			Операция IsDone проверяет, относится ли индекс к элементу внутри списка:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">Listlterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">ltem</span><span style="color: #f92672">&gt;::</span><span style="color: #f8f8f2">IsDone</span> <span style="color: #f8f8f2">()</span> <span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">{</span>
+				  <span style="color: #66d9ef">return</span> <span style="color: #f8f8f2">_current</span> <span style="color: #f92672">&gt;=</span> <span style="color: #f8f8f2">_</span> <span style="color: #f8f8f2">l</span> <span style="color: #f8f8f2">i</span> <span style="color: #f8f8f2">s</span> <span style="color: #f8f8f2">t</span> <span style="color: #f92672">-</span> <span style="color: #f92672">&gt;</span> <span style="color: #f8f8f2">C</span> <span style="color: #f8f8f2">o</span> <span style="color: #f8f8f2">u</span> <span style="color: #f8f8f2">n</span> <span style="color: #f8f8f2">t</span> <span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			Наконец, операция Current Item возвращает элемент, соответствующий текущему индексу. Если итерация уже завершилась, то мы возбуждаем исключение IteratorOutOfBounds:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #f8f8f2">Item</span> <span style="color: #f8f8f2">Listlterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">ltem</span><span style="color: #f92672">&gt;::</span><span style="color: #f8f8f2">CurrentItem</span> <span style="color: #f8f8f2">()</span> <span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">{</span>
+				  <span style="color: #66d9ef">if</span> <span style="color: #f8f8f2">(IsDoneO)</span> <span style="color: #f8f8f2">{</span>
+				   <span style="color: #66d9ef">throw</span> <span style="color: #f8f8f2">IteratorOutOfBounds;</span>
+				<span style="color: #f8f8f2">}</span>
+				  <span style="color: #66d9ef">return</span> <span style="color: #f8f8f2">_list</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Get(_current);</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			Реализация обратного итератора ReverseListlterator аналогична рассмотренной, только его операция First позиционирует _current на конец списка, а операция Next делает текущим предыдущий элемент;
+		</li>
+		<li>
+			<em>использование итераторов.</em> Предположим, что имеется список объектов Employee (служащий) и мы хотели бы напечатать информацию обо всех содержащихся в нем служащих. Класс Employee поддерживает печать с помощью операции Print. Для печати списка определим операцию PrintEmployees, принимающую в качестве аргумента итератор. Она пользуется этим итератором для обхода и печати содержимого списка:
+			<pre>
+				<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">PrintEmployees</span> <span style="color: #f8f8f2">(Iterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;&amp;</span> <span style="color: #f8f8f2">i)</span> <span style="color: #f8f8f2">{</span>
+			  <span style="color: #66d9ef">for</span> <span style="color: #f8f8f2">(i</span> <span style="color: #f8f8f2">.</span> <span style="color: #f8f8f2">First</span> <span style="color: #f8f8f2">();</span> <span style="color: #f92672">!</span><span style="color: #f8f8f2">i.</span> <span style="color: #f8f8f2">IsDone();</span> <span style="color: #f8f8f2">i.</span> <span style="color: #f8f8f2">NextO)</span> <span style="color: #f8f8f2">{</span>
+			    <span style="color: #f8f8f2">i.Current</span><span style="color: #f92672">!</span><span style="color: #f8f8f2">tem()</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Print();</span>
+			  <span style="color: #f8f8f2">}</span>
+			<span style="color: #f8f8f2">}</span></pre>
+			Поскольку у нас есть итераторы для обхода списка от начала к концу и от конца к началу, то мы можем повторно воспользоваться той же самой операцией для печати списка служащих в обоих направлениях:
+			<pre>
+				<span style="color: #f8f8f2">List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;*</span> <span style="color: #f8f8f2">employees;</span>
+				<span style="color: #75715e">// ...</span>
+				<span style="color: #f8f8f2">ListIterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;</span> <span style="color: #f8f8f2">forward</span> <span style="color: #f8f8f2">(employees)</span> <span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">ReverseListIterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;</span> <span style="color: #f8f8f2">backward</span> <span style="color: #f8f8f2">(employees)</span> <span style="color: #f8f8f2">;</span>
+
+				<span style="color: #f8f8f2">PrintEmployees</span> <span style="color: #f8f8f2">(forward)</span> <span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">PrintEmployees</span> <span style="color: #f8f8f2">(backward)</span> <span style="color: #f8f8f2">,</span><span style="color: #f92672">-</span></pre>
+		</li>
+		<li>
+			<em>как избежать зависимости от конкретной реализации списка.</em> Рассмотрим, как повлияла бы на код итератора реализация класса List в виде списка с пропусками. Подкласс SkipList класса List должен предоставить итератор SkipList Iterator, реализующий интерфейс класса Iterator. Для эффективной реализации итерации у SkipListlterator должен быть не только индекс. Но поскольку SkipListlterator согласуется с интерфейсом класса Iterator, то операцию PrintEmployees можно использовать и тогда, когда служащие хранятся в списке типа SkipList:
+			<pre>
+				<span style="color: #f8f8f2">SkipList</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;*</span> <span style="color: #f8f8f2">employees;</span>
+				<span style="color: #75715e">// ...</span>
+
+				<span style="color: #f8f8f2">SkipListIterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;</span> <span style="color: #f8f8f2">iterator(employees);</span>
+				<span style="color: #f8f8f2">PrintEmployees(iterator);</span></pre>
+			Оптимальное решение в данной ситуации - вообще не привязываться к конкретной реализации списка, например SkipList. Мы можем рассмотреть абстрактный класс AbstractList ради стандартизации интерфейса списка для различных реализаций. Тогда и List, и SkipList окажутся подклассами AbstractList.
+			<br/>
+			Для поддержки полиморфной итерации класс AbstractList определяет фабричный метод Createlterator, замещаемый в подклассах, которые возвращают подходящий для себя итератор:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">AbstractList</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #f8f8f2">public:</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #f8f8f2">Iterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">Createlterator()</span> <span style="color: #66d9ef">const</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #75715e">// ...</span>
+				<span style="color: #f8f8f2">};</span></pre>
+			Альтернативный вариант &ndash; определение общего подмешиваемого класса Traversable, в котором определен интерфейс для создания итератора. Для поддержки полиморфных итераций агрегированные классы могут являться потомками Traversable.
+			<br/>
+			Класс List замещает Createlterator, для того чтобы возвратить объект Listlterator:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #f8f8f2">Iterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;::</span><span style="color: #f8f8f2">CreateIterator</span> <span style="color: #f8f8f2">()</span> <span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #66d9ef">return</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">Listlterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">ltem</span><span style="color: #f92672">&gt;</span><span style="color: #f8f8f2">(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			Теперь мы можем написать код для печати служащих, который не будет зависеть от конкретного представления списка:
+			<pre>
+				<span style="color: #75715e">// мы знаем только, что существует класс AbstractList</span>
+				<span style="color: #f8f8f2">AbstractList</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;*</span> <span style="color: #f8f8f2">employees;</span>
+				<span style="color: #f8f8f2">II</span> <span style="color: #f8f8f2">...</span>
+
+				<span style="color: #f8f8f2">Iterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;*</span> <span style="color: #f8f8f2">iterator</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">employees</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Create</span><span style="color: #f92672">!</span><span style="color: #f8f8f2">terator();</span>
+				<span style="color: #f8f8f2">PrintEmployees(</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">iterator);</span>
+				<span style="color: #66d9ef">delete</span> <span style="color: #f8f8f2">iterator;</span></pre>
+		</li>
+		<li>
+			<em>как гарантировать удаление итераторов?</em> Заметим, что Createlterator возвращает только что созданный в динамической памяти объект-итератор. Ответственность за его удаление лежит на нас. Если мы забудем это сделать, то возникнет утечка памяти. Для того чтобы упростить задачу клиентам, мы введем класс IteratorPtr, который замещает итератор. Он уничтожит объект Iterator при выходе из области определения.
+			<br/>
+			Объект класса IteratorPtr всегда распределяется в стеке. C++ автома тически вызовет его деструктор, который уничтожит реальный итератор. В классе IteratorPtr операторы operator-> и operator* перегруже ны так, что объект этого класса можно рассматривать как указатель на ите ратор. Функции-члены класса IteratorPtr встраиваются, поэтому при их вызове накладных расходов нет:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">IteratorPtr</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #f8f8f2">public:</span>
+				  <span style="color: #f8f8f2">IteratorPtr(Iterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">i)</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">_i(i)</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">}</span>
+				  <span style="color: #f92672">~</span><span style="color: #f8f8f2">IteratorPtr()</span> <span style="color: #f8f8f2">{</span> <span style="color: #66d9ef">delete</span> <span style="color: #f8f8f2">_i;</span> <span style="color: #f8f8f2">}</span>
+
+				  <span style="color: #f8f8f2">Iterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #66d9ef">operator</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span> <span style="color: #66d9ef">return</span> <span style="color: #f8f8f2">_i;</span> <span style="color: #f8f8f2">}</span>
+				  <span style="color: #f8f8f2">Iterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;&amp;</span> <span style="color: #66d9ef">operator</span><span style="color: #f92672">*!</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span> <span style="color: #66d9ef">return</span> <span style="color: #f92672">*</span><span style="color: #f8f8f2">_i;</span> <span style="color: #f8f8f2">}</span>
+				<span style="color: #f8f8f2">private:</span>
+				  <span style="color: #75715e">// запретить копирование и присваивание, чтобы</span>
+				  <span style="color: #75715e">// избежать многократных удалений _i</span>
+
+				  <span style="color: #f8f8f2">IteratorPtr(</span><span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">IteratorPtrk);</span>
+				  <span style="color: #f8f8f2">IteratorPtrk</span> <span style="color: #66d9ef">operator</span><span style="color: #f92672">=</span><span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">IteratorPtrk);</span>
+				<span style="color: #f8f8f2">private:</span>
+				  <span style="color: #f8f8f2">Iterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">_i;</span>
+				<span style="color: #f8f8f2">};</span></pre>
+			IteratorPtr позволяет упростить код печати:
+			<pre>
+				<span style="color: #f8f8f2">AbstractList</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;*</span> <span style="color: #f8f8f2">employees;</span>
+				<span style="color: #75715e">// ...</span>
+
+				<span style="color: #f8f8f2">IteratorPtr</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;</span> <span style="color: #f8f8f2">iterator</span> <span style="color: #f8f8f2">(employees</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Create</span><span style="color: #f92672">!</span><span style="color: #f8f8f2">terator</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">PrintEmployees</span> <span style="color: #f8f8f2">(</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">iterator)</span> <span style="color: #f8f8f2">;</span></pre>
+		</li>
+		<li>
+			<em>внутренний Listlterator.</em> В последнем примере рассмотрим, как можно было бы реализовать внутренний или пассивный класс Listlterator. Теперь итератор сам управляет итерацией и применяет к каждому элементу некоторую операцию.
+			<br/>
+			Нерешенным остается вопрос о том, как параметризовать итератор той операцией, которую мы хотим применить к каждому элементу. C++ не поддерживает ни анонимных функций, ни замыканий, которые предусмотрены для этой цели в других языках. Существует, по крайней мере, два варианта: передать указатель на функцию (глобальную или статическую) или породить подклассы. В первом случае итератор вызывает переданную ему операцию в каждой точке обхода. Во втором случае итератор вызывает операцию, которая замещена в подклассе и обеспечивает нужное поведение.
+			<br/>
+			Ни один из вариантов не идеален. Часто во время обхода нужно аккумулировать некоторую информацию, а функции для этого плохо подходят &mdash; пришлось бы использовать статические переменные для запоминания состояния. Подкласс класса Iterator предоставляет удобное место для хранения аккумулированного состояния &ndash; переменную экземпляра. Но создавать подкласс для каждого вида обхода слишком трудоемко.
+			<br/>
+			Назовем внутренний итератор ListTraverser:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">ListTraverser</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #f8f8f2">public:</span>
+				  <span style="color: #f8f8f2">ListTraverser</span> <span style="color: #f8f8f2">(List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">aList);</span>
+				  <span style="color: #66d9ef">bool</span> <span style="color: #a6e22e">Traverse</span> <span style="color: #f8f8f2">();</span>
+				<span style="color: #f8f8f2">protected:</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">Processltem(</span><span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">Item</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">)</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">private:</span>
+				  <span style="color: #f8f8f2">Listlterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">ltem</span><span style="color: #f92672">&gt;</span> <span style="color: #960050; background-color: #1e0010">„</span><span style="color: #f8f8f2">iterator;</span>
+				<span style="color: #f8f8f2">};</span></pre>
+			ListTraverser принимает экземпляр List в качестве параметра. Внутри себя он использует внешний итератор List Iterator для выполнения обхода. Операция Traverse начинает обход и вызывает для каждого элемента операцию Processltem. Внутренний итератор может закончить обход, вернув f a l s e из Processltem. Traverse сообщает о преждевременном завершении обхода:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+					<span style="color: #f8f8f2">ListTraverser</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;::</span><span style="color: #f8f8f2">ListTraverser</span> <span style="color: #f8f8f2">(</span>
+				<span style="color: #f8f8f2">List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">aList</span>
+				<span style="color: #f8f8f2">)</span> <span style="color: #f92672">:</span> <span style="color: #f8f8f2">_iterator(aList)</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">}</span>
+
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">ListTraverser</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;::</span><span style="color: #f8f8f2">Traverse</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+					<span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">result</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">false;</span>
+
+					<span style="color: #66d9ef">for</span> <span style="color: #f8f8f2">(</span>
+						<span style="color: #f8f8f2">_iterator.First();</span>
+						<span style="color: #f92672">!</span><span style="color: #f8f8f2">_iterator.IsDone();</span>
+						<span style="color: #f8f8f2">_iterator.Next()</span>
+					<span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span>
+						<span style="color: #f8f8f2">result</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">ProcessItem(_iterator.CurrentItem());</span>
+
+						<span style="color: #66d9ef">if</span> <span style="color: #f8f8f2">(result</span> <span style="color: #f92672">==</span> <span style="color: #f8f8f2">false)</span> <span style="color: #f8f8f2">{</span>
+							<span style="color: #66d9ef">break</span><span style="color: #f8f8f2">;</span>
+						<span style="color: #f8f8f2">}</span>
+					<span style="color: #f8f8f2">}</span>
+					<span style="color: #66d9ef">return</span> <span style="color: #f8f8f2">result;</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			Воспользуемся итератором ListTraverser для печати первых десяти служащих из списка. С этой целью надо породить подкласс от ListTraverser и определить в нем операцию Process Item. Подсчитывать число напечатанных служащих будем в переменной экземпляра _count:
+			<pre>
+				<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">PrintNEmployees</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">ListTraverser</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #f8f8f2">public:</span>
+				  <span style="color: #f8f8f2">PrintNEmployees(List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;*</span> <span style="color: #f8f8f2">aList,</span> <span style="color: #66d9ef">int</span> <span style="color: #f8f8f2">n)</span> <span style="color: #f92672">:</span>
+				    <span style="color: #f8f8f2">ListTraverser</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;</span><span style="color: #f8f8f2">(aList),</span>
+				    <span style="color: #f8f8f2">_total(n),</span> <span style="color: #f8f8f2">_count(</span><span style="color: #ae81ff">0</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">}</span>
+
+				<span style="color: #f8f8f2">protected:</span>
+				  <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">ProcessltemtEmployee</span><span style="color: #f92672">*</span> <span style="color: #66d9ef">const</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">);</span>
+				<span style="color: #f8f8f2">private:</span>
+				  <span style="color: #66d9ef">int</span> <span style="color: #f8f8f2">_total;</span>
+				  <span style="color: #66d9ef">int</span> <span style="color: #f8f8f2">_count;</span>
+				<span style="color: #f8f8f2">};</span>
+				<span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">PrintNEmployees</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">ProcessItem</span> <span style="color: #f8f8f2">(Employee</span><span style="color: #f92672">*</span> <span style="color: #66d9ef">const</span><span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">e)</span> <span style="color: #f8f8f2">{</span>
+				  <span style="color: #f8f8f2">_count</span><span style="color: #f92672">++</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #f8f8f2">e</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Print();</span>
+				  <span style="color: #66d9ef">return</span> <span style="color: #f8f8f2">_count</span> <span style="color: #f92672">&lt;</span> <span style="color: #f8f8f2">_total;</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			Вот как PrintNEmployees печатает первые 10 служащих:
+			<pre>
+				<span style="color: #f8f8f2">List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;*</span> <span style="color: #f8f8f2">employees;</span>
+				<span style="color: #75715e">// ...</span>
+
+				<span style="color: #f8f8f2">PrintNEmployees</span> <span style="color: #a6e22e">pa</span><span style="color: #f8f8f2">(employees,</span> <span style="color: #ae81ff">10</span><span style="color: #f8f8f2">);</span>
+				<span style="color: #f8f8f2">pa.Traverse();</span></pre>
+			Обратите внимание, что в коде клиента нет цикла итерации. Всю логику обхода можно использовать повторно. В этом и состоит основное преимущество внутреннего итератора. Работы, правда, немного больше, чем для внешнего итератора, так как нужно определять новый класс. Сравните с программой, где применяется внешний итератор:
+			<pre>
+				<span style="color: #f8f8f2">ListIterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Employee</span><span style="color: #f92672">*&gt;</span> <span style="color: #f8f8f2">i(employees);</span>
+				<span style="color: #66d9ef">int</span> <span style="color: #f8f8f2">count</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+
+				<span style="color: #66d9ef">for</span> <span style="color: #f8f8f2">(i.</span> <span style="color: #f8f8f2">First</span> <span style="color: #f8f8f2">();</span> <span style="color: #f92672">!</span><span style="color: #f8f8f2">i.IsDone()</span> <span style="color: #f8f8f2">;</span> <span style="color: #f8f8f2">i.NextO)</span> <span style="color: #f8f8f2">{</span>
+				  <span style="color: #f8f8f2">count</span><span style="color: #f92672">++</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #f8f8f2">i.Currentltemf)</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Print();</span>
+
+				  <span style="color: #66d9ef">if</span> <span style="color: #f8f8f2">(count</span> <span style="color: #f92672">&gt;=</span> <span style="color: #ae81ff">10</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span>
+				    <span style="color: #66d9ef">break</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #f8f8f2">}</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			Внутренние итераторы могут инкапсулировать разные виды итераций. Например, FilteringListTraverser инкапсулирует итерацию, при которой обрабатываются лишь элементы, удовлетворяющие определенному условию:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">FilteringListTraverser</span> <span style="color: #f8f8f2">{</span>
+				<span style="color: #f8f8f2">public:</span>
+				  <span style="color: #f8f8f2">FilteringListTraverser</span> <span style="color: #f8f8f2">(List</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;*</span> <span style="color: #f8f8f2">aList)</span> <span style="color: #f8f8f2">;</span>
+				  <span style="color: #66d9ef">bool</span> <span style="color: #a6e22e">Traverse</span> <span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">protected:</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">Processltemfconst</span> <span style="color: #f8f8f2">Item</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">)</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+				  <span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">Testltemt</span> <span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">Item</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">)</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+				<span style="color: #f8f8f2">private:</span>
+				  <span style="color: #f8f8f2">Listlterator</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">ltem</span><span style="color: #f92672">&gt;</span> <span style="color: #f8f8f2">_iterator;</span>
+				<span style="color: #f8f8f2">};</span></pre>
+			Интерфейс такой же, как у ListTraverser, если не считать новой функции-члена Test Item, которая и реализует проверку условия. В подклассах Test Item замещается для задания конкретного условия. Посредством операции Traverse выясняется, нужно ли продолжать обход, основываясь на результате проверки:
+			<pre>
+				<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+				<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">FilteringListTraverser</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">Item</span><span style="color: #f92672">&gt;::</span><span style="color: #f8f8f2">Traverse</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+				  <span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">result</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">false;</span>
+
+				  <span style="color: #66d9ef">for</span> <span style="color: #f8f8f2">(</span>
+				    <span style="color: #f8f8f2">_iterator.First();</span>
+				    <span style="color: #f92672">!</span><span style="color: #f8f8f2">_iterator.IsDone();</span>
+				    <span style="color: #f8f8f2">_iterator</span><span style="color: #f92672">-</span><span style="color: #f8f8f2">Next()</span>
+				  <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span>
+				    <span style="color: #66d9ef">if</span> <span style="color: #f8f8f2">(TestItem(_iterator.CurrentItem()))</span> <span style="color: #f8f8f2">{</span>
+				      <span style="color: #f8f8f2">result</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">ProcessItem(_iterator.CurrentItem());</span>
+
+				      <span style="color: #66d9ef">if</span> <span style="color: #f8f8f2">(result</span> <span style="color: #f92672">==</span> <span style="color: #f8f8f2">false)</span> <span style="color: #f8f8f2">{</span>
+				        <span style="color: #66d9ef">break</span><span style="color: #f8f8f2">;</span>
+				      <span style="color: #f8f8f2">}</span>
+				    <span style="color: #f8f8f2">}</span>
+				  <span style="color: #f8f8f2">}</span>
+				  <span style="color: #66d9ef">return</span> <span style="color: #f8f8f2">result;</span>
+				<span style="color: #f8f8f2">}</span></pre>
+			В качестве варианта можно было определить функцию Traverse так, чтобы она сообщала хотя бы об одном встретившемся элементе, который удовлетворяет условию.
+		</li>
+	</ul>
+	<h2>Известные применения</h2>
+	<p>
+		<b>И</b>тераторы широко распространены в объектно-ориентированных системах. В том или ином виде они есть в большинстве библиотек коллекций классов.
+	</p>
+	<p>
+		<b>В</b>от пример из библиотеки компонентов Грейди Буча [Воо94], популярной библиотеки, поддерживающей классы коллекций. В ней имеется реализация очереди фиксированной (ограниченной) и динамически растущей длины (неограниченной). Интерфейс очереди определен в абстрактном классе Queue. Для поддержки полиморфной итерации по очередям с разной реализацией итератор написан с использованием интерфейса абстрактного класса Queue. Преимущество такого подхода очевидно &ndash; отсутствует необходимость в фабричном методе, который запрашивал бы у очереди соответствующий ей итератор. Однако, чтобы итератор можно было реализовать эффективно, интерфейс абстрактного класса Queue должен быть мощным.
+	</p>
+	<p>
+		<b>В</b> языке Smalltalk необязательно определять итераторы так явно. В стандартных классах коллекций (Bag, Set, Dictionary, OrderedCollection, String и т.д.) определен метод do:, выполняющий функции внутреннего итератора, который принимает блок (то есть замыкание). Каждый элемент коллекции привязывается к локальной переменной в блоке, а затем блок выполняется. Smalltalk также включает набор классов Stream, которые поддерживают похожий на итератор интерфейс. ReadStream - это, по существу, класс Iterator и внешний итератор для всех последовательных коллекций. Для непоследовательных коллекций типа Set и Dictionary нет стандартных итераторов.
+	</p>
+	<p>
+		<b>П</b>олиморфные итераторы и выполняющие очистку заместители находятся в контейнерных классах ЕТ++ [WGM88]. Курсороподобные итераторы используются в классах каркаса графических редакторов Unidraw [VL90].
+	</p>
+	<p>
+		<b>В</b> системе ObjectWindows 2.0 [Вог94] имеется иерархия классов итераторов для контейнеров. Контейнеры разных типов можно обходить одним и тем же способом. Синтаксис итераторов в ObjectWindows основан на перегрузке постфиксного оператора инкремента ++ для перехода к следующему элементу.
+	</p>
+	<h2>Родственные паттерны</h2>
+	<p>
+		<b>К</b>омпоновщик: итераторы довольно часто применяются для обхода рекурсивных структур, создаваемых компоновщиком.
+	</p>
+	<p>
+		<b>Ф</b>абричный метод: полиморфные итераторы поручают фабричным методам инстанцировать подходящие подклассы класса Iterator.
+	</p>
+	<p>
+		<b>И</b>тератор может использовать хранитель для сохранения состояния итерации и при этом содержит его внутри себя.
+	</p>
+	</section>
+		<footer>
+			<div class="copy">
+				<h3> Made by El_paso - Rivne 2016</h3>
+			</div> 
+		</footer>
+	</main>
+</body>
+</html>

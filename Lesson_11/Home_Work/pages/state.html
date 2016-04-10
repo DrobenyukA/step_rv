@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<meta name=viewport content="width=device-width, initial-scale=1"/>	
+	<title>State - pattern</title>
+	<link rel="stylesheet" href="../css/reset.css"/>
+	<link rel="stylesheet" href="../css/andriy_page_style.css"/>
+</head>
+<body>
+	<nav>
+		<div id="col-100"><a href="../index.html">Home</a></div>
+		<div class="row">
+			<div class="col"><a href="chain_of_responsibility_pattern.html">Chain of Responsibility</a></div>
+			<div class="col"><a href="command_pattern.html">Command</a></div>
+			<div class="col"><a href="Iterator_pattern.html">Iterator</a></div>
+			<div class="col"><a href="strategy.html">Strategy</a></div>
+			<div class="col"><a href="visitor.html">Visitor</a></div>
+		</div>
+		<div class="row">
+			<div class="col"><a href="interpreter_pattern.html">Interpreter</a></div>
+			<div class="col"><a href="template_method.html">Template Method</a></div>
+			<div class="col"><a href="#">Observer</a></div>
+			<div class="col"><a href="Memento.html">Memento</a></div>
+			<div class="col"><a href="mediator.html">Mediator</a></div>
+		</div>
+		<div class="row-768">
+			<div class="col"><a href="chain_of_responsibility_pattern.html">Chain of Responsibility</a></div>
+			<div class="col"><a href="command_pattern.html">Command</a></div>
+			<div class="col"><a href="Iterator_pattern.html">Iterator</a></div>
+			<div class="col"><a href="strategy.html">Strategy</a></div>
+			<div class="col"><a href="visitor.html">Visitor</a></div>
+			<div class="col"><a href="interpreter_pattern.html">Interpreter</a></div>
+			<div class="col"><a href="template_method.html">Template Method</a></div>
+			<div class="col"><a href="#">Observer</a></div>
+			<div class="col"><a href="mediator.html">Mediator</a></div>
+			<div class="col"><a href="mediator.html">Mediator</a></div>
+		</div>
+	</nav>
+	<header>
+		<h1><span>Паттерн</span> <b>State</b></h1>
+	</header>
+		<h2>Название и классификация паттерна</h2>
+		<p>Состояние - паттерн поведения объектов.</p>
+		<h2>Назначение</h2>
+		<p>Позволяет объекту варьировать свое поведение в зависимости от внутреннего состояния. Извне создается впечатление, что изменился класс объекта.</p>
+		<h2>Мотивация</h2>
+		<p>Рассмотрим класс TCPConnection, с помощью которого представлено сетевое соединение. Объект этого класса может находиться в одном из нескольких состояний: Established (установлено), Listening (прослушивание), Closed(закрыто). Когда объект TCPConnection получает запросы от других объектов, то в зависимости от текущего состояния он отвечает по-разному. Например, ответ на запрос Open (открыть) зависит от того, находится ли соединение в состоянии Closed или Established. Паттерн состояние описывает, каким образом объект TCPConnect ion может вести себя по-разному, находясь в различных состояниях.</p>
+		<p>Основная идея этого паттерна заключается в том, чтобы ввести абстрактный класс TCPState для представления различных состояний соединения. Этот класс объявляет интерфейс, общий для всех классов, описывающих различные рабочие состояния. В подклассах TCPState реализовано поведение, специфичное для конкретного состояния. Например, в классах TCPEstabli shed и TCPClosed реализовано поведение, характерное для состояний Established и Closed соответственно.</p>
+	<img src="../img/pages/8/1.jpg" alt="scheme"/>
+		<p>Класс TCPConnect ion хранит у себя объект состояния (экземпляр некоторого подкласса TCPState), представляющий текущее состояние соединения, и делегирует все зависящие от состояния запросы этому объекту. TCPConnection ис- пользует свой экземпляр подкласса TCPState для выполнения операций, свойственных только данному состоянию соединения.</p>
+		<p>При каждом изменении состояния соединения TCPConnection изменяет свой объект-состояние. Например, когда установленное соединение закрывается, CPConnection заменяет экземпляр класса TCPEstablished экземпляром TCPCIosed.</p>
+	<h2>Применимость</h2>
+	<p>Используйте паттерн состояние в следующих случаях:</p>
+<ul>
+	<li>когда поведение объекта зависит от его состояния и должно изменяться во время выполнения;</li>
+	<li>когда в коде операций встречаются состоящие из многих ветвей условные операторы, в которых выбор ветви зависит от состояния. Обычно в таком случае состояние представлено перечисляемыми константами. Часто одна и та же структура условного оператора повторяется в нескольких операциях. Паттерн состояние предлагает поместить каждую ветвь в отдельный класс. Это позволяет трактовать состояние объекта как самостоятельный объект, который может изменяться независимо от других.</li>
+</ul>
+	<h2>Структура</h2>
+	<img src="../img/pages/8/2.jpg" alt="scheme" class="middle"/>
+
+	<h2>Участники</h2>
+	<p><b>Context</b> (TCPConnection) &mdash; контекст:</p>
+	<ul class="line">
+		<li>определяет интерфейс, представляющий интерес для клиентов;</li>
+		<li>хранит экземпляр подкласса ConcreteState, которым определяется текущее состояние;</li>
+	</ul>
+	<p><b>State</b> (TCPState) &mdash; состояние:</p>
+	<ul class="line">
+		<li>определяет интерфейс для инкапсуляции поведения, ассоциированного с конкретным состоянием контекста Context;</li>
+	</ul>
+	<p><b>Подклассы ConcreteState</b> (TCPEstablished, TCPListen, TCPClosed) &mdash; конкретное состояние:</p>
+	<ul class="line">
+		<li>каждый подкласс реализует поведение, ассоциированное с некоторым состоянием контекста Context.</li>
+	</ul>
+	<h2>Отношения</h2>
+	<ul>
+		<li>класс Context делегирует зависящие от состояния запросы текущему объекту ConcreteState;</li>
+		<li>контекст может передать себя в качестве аргумента объекту State, который будет обрабатывать запрос. Это дает возможность объектусостоянию при необходимости получить доступ к контексту;</li>
+		<li>Context - это основной интерфейс для клиентов. Клиенты могут конфигурировать контекст объектами состояния State. Один раз сконфигурировав контекст, Клиенты уже не должны напрямую связываться с объектами состояния;</li>
+		<li>либо Context, либо подклассы ConcreteState могут решить, при каких условиях и в каком порядке происходит смена состояний.</li>
+	</ul>
+
+	<h2>Результаты</h2>
+	<p>Результаты использования паттерна состояние:</p>
+		<ul>
+			<li><em>локализует зависящее от состояния поведение и делит его на части, соответствующие состояниям</em>. Паттерн состояние помещает все поведение, ассо- циированное с конкретным состоянием, в отдельный объект. Поскольку зависящий от состояния код целиком находится в одном из подклассов класса State, то добавлять новые состояния и переходы можно просто путем порождения новых подклассов. Вместо этого можно было бы использовать данные-члены для определения внутренних состояний, тогда операции объекта Context проверяли бы эти данные. Но в таком случае похожие условные операторы или операторы ветв- ления были бы разбросаны по всему коду класса Context. При этом добавление нового состояния потребовало бы изменения нескольких операций, что затруднило бы сопровождение. Паттерн состояние позволяет решить эту проблему, но одновременно порождает другую, поскольку поведение для различных состояний оказывается распределенным между несколькими подклассами State. Это увеличивает число классов. Конечно, один класс компактнее, но если состояний много, то такое распределение эффективнее, так как в противном случае пришлось бы иметь дело с громоздкими условными операторами. Наличие громоздких условных операторов нежелательно, равно как и наличие длинных процедур. Они слишком монолитны, вот почему модификация и расширение кода становится проблемой. Паттерн состояние предлагает более удачный способ структурирования зависящего от состояния кода. Логика, описывающая переходы между состояниями, больше не заключена в монолитные операторы if или switch, а распределена между подклассами State. При инкапсуляции каждого перехода и действия ъ класс состоя- ние становится полноценным объектом. Это улучшает структуру кода и проясняет его назначение;</li>
+			<li><em>делает явными переходы между состояниями</em>. Если объект определяет свое текущее состояние исключительно в терминах внутренних данных, то переходы между состояниями не имеют явного представления; они проявляются лишь как присваивания некоторым переменным. Ввод отдельных объектов для различных состояний делает переходы более явными. Кроме того, объекты State могут защитить контекст Context от рассогласования внутрен- них переменных, поскольку переходы с точки зрения контекста - это атомарные действия. Для осуществления перехода надо изменить значение только одной переменной (объектной переменной State в классе Context), а не нескольких [dCLF93];</li>
+			<li><em>объекты состояния можно разделять</em>. Если в объекте состояния State отсутствуют переменные экземпляра, то есть представляемое им состояние кодируется исключительно самим типом, то разные контексты могут разделять один и тот же объект State. Когда состояния разделяются таким образом, они являются, по сути дела, приспособленцами (см. описание паттерна приспособленец), у которых нет внутреннего состояния, а есть только поведение.</li>
+		</ul>
+	<h2>Реализация</h2>
+		<p>С паттерном состояние связан целый ряд вопросов реализации:</p>
+		<ul>
+			<li><em>что определяет переходы между состояниями.</em> Паттерн состояние ничего не сообщает о том, какой участник определяет критерий перехода между состояниями. Если критерии зафиксированы, то их можно реализовать непос- редственно в классе Context. Однако в общем случае более гибкий и правильный подход заключается в том, чтобы позволить самим подклассам класса State определять следующее состояние и момент перехода. Для этого в класс Context надо добавить интерфейс, позволяющий объектам State установить состояние контекста. Такую децентрализованную логику переходов проще модифицировать и расширять - нужно лишь определить новые подклассы State. Недостаток децентрализации в том, что каждый подкласс State должен &laquo;знать&raquo; еще хотя бы об одном подклассе, что вносит реализационные зависимости между подклассами;</li>
+			<li><em>табличная альтернатива.</em> Том Каргилл (Tom Cargill) в книге C++Programming Style [Car92] описывает другой способ структурирования кода, управляемого сменой состояний. Он использует таблицу для отображения входных данных на переходы между состояниями. С ее помощью можно определить, в какое состояние нужно перейти при поступлении некоторых входных данных. По существу, тем самым мы заменяем условный код (или виртуальные функции, если речь идет о паттерне состояние) поиском в таблице. Основное преимущество таблиц - в их регулярности: для изменения критериев перехода достаточно модифицировать только данные, а не код. Но есть и недостатки:
+			<ul class="line">
+				<li>поиск в таблице часто менее эффективен, чем вызов функции (виртуальной);</li>
+				<li>представление логики переходов в однородном табличном формате делает критерии менее явными и, стало быть, более сложными для понимания;</li>
+				<li>обычно трудно добавить действия, которыми сопровождаются переходы между состояниями. Табличный метод учитывает состояния и переходы между ними, но его необходимо дополнить, чтобы при каждом изменении состоянии можно было выполнять произвольные вычисления. Главное различие между конечными автоматами на базе таблиц и паттерном состояние можно сформулировать так: паттерн состояние моделирует поведение, зависящее от состояния, а табличный метод акцентирует внимание на определении переходов между состояниями;</li>
+			</ul>
+			</li>
+		</ul>
+		<ul>
+			<li>
+				<em>создание и уничтожение объектов состояния.</em> В процессе разработки обычно приходится выбирать между:
+				<ul class="line">
+					<li>созданием объектов состояния, когда в них возникает необходимость, и уничтожением сразу после использования;</li>
+					<li>созданием их заранее и навсегда.</li>
+				</ul>
+			</li>
+		</ul>
+		<p>Первый вариант предпочтителен, когда заранее неизвестно, в какие состояния будет попадать система, и контекст изменяет состояние сравнительно редко. При этом мы не создаем объектов, которые никогда не будут использованы, что существенно, если в объектах состояния хранится много информации. Когда изменения состояния происходят часто, поэтому не хотелось бы уничтожать представляющие их объекты (ибо они могут очень скоро понадобиться вновь), следует воспользоваться вторым подходом. Время на создание объектов затрачивается только один раз, в самом начале, а на уничтожение - не затрачивается вовсе. Правда, этот подход может оказать- ся неудобным, так как в контексте должны храниться ссылки на все состояния, в которые система теоретически может попасть;</p>
+					
+		<ul>
+			<li><em>использование динамического наследования.</em> Варьировать поведение по за- просу можно, меняя класс объекта во время выполнения, но в большинстве объектно-ориентированных языков это не поддерживается. Исключение составляет Self [US87] и другие основанные на делегировании языки, которые предоставляют такой механизм и, следовательно, поддерживают паттерн состояние напрямую. Объекты в языке Self могут делегировать операции другим объектам, обеспечивая тем самым некую форму динамического наследования. С изменением целевого объекта делегирования во время выполнения, по существу, изменяется и структура графа наследования. Такой механизм позволяет объектам варьировать поведение путем изменения своего класса.</li>
+		</ul>
+
+		<h2>Пример кода</h2>
+		<p>В следующем примере приведен код на языке C++ с TCP-соединением из раздела &laquo;Мотивация&raquo;. Это упрощенный вариант протокола TCP, в нем, конечно же, представлен не весь протокол и даже не все состояния TCP-соединений.</p>
+		<p>Прежде всего определим класс TCPConnection, который предоставляет ин- терфейс для передачи данных и обрабатывает запросы на изменение состояния:</p>
+
+		<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">TCPOctetStream</span><span style="color: #f8f8f2">;</span>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">TCPState</span><span style="color: #f8f8f2">;</span>
+
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">TCPConnection</span> <span style="color: #f8f8f2">{</span>
+  <span style="color: #f8f8f2">public:</span>
+    <span style="color: #f8f8f2">TCPConnection</span> <span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+
+    <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">ActiveOpen</span> <span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>	
+    <span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">PassiveOpenO</span> <span style="color: #f8f8f2">;</span>	
+    <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Close</span> <span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+
+    <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Send</span><span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">;</span>	
+    <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Acknowledge</span> <span style="color: #f8f8f2">();</span>	
+    <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Synchronize</span> <span style="color: #f8f8f2">();</span>
+
+    <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">ProcessOctet</span> <span style="color: #f8f8f2">(TCPOctetStream</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+				
+  <span style="color: #f8f8f2">private:</span>	
+    <span style="color: #66d9ef">friend</span> <span style="color: #66d9ef">class</span> <span style="color: #a6e22e">TCPState</span><span style="color: #f8f8f2">;</span>
+    <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">ChangeState</span> <span style="color: #f8f8f2">(TCPState</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+			
+  <span style="color: #f8f8f2">private:</span>			
+    <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_state;</span>
+<span style="color: #f8f8f2">};</span></pre>
+		<p>В переменной-члене _state класса TCPConnection хранится экземпляр класса TCPState. Этот класс дублирует интерфейс изменения состояния, опре- деленный в классе TCPConnect ion. Каждая операция TCPState принимает экземп- ляр TCPConnection как параметр, тем самым позволяя объекту TCPState получить доступ к данным объекта TCPConnection и изменить состояние соединения</p>
+		<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">TCPState</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">Transmit(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">TCPOctetStream</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">ActiveOpen</span><span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">PassiveOpen</span><span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Close</span><span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Synchronize</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Acknowledge</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Send</span> <span style="color: #f8f8f2">(TCPConnect</span> <span style="color: #f8f8f2">ion</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">);</span>
+<span style="color: #f8f8f2">protected:</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">ChangeState</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+<span style="color: #f8f8f2">};</span></pre>
+
+		<p>TCPConnection делегирует все зависящие от состояния запросы хранимому в _state экземпляру TCPState. Кроме того, в классе TCPConnection существует операция, с помощью которой в эту переменную можно записать указатель на другой объект TCPState. Конструктор класса TCPConnection инициализирует _state указателем на состояние TCPClosed (мы определим его ниже):</p>
+
+		<pre>
+<span style="color: #f8f8f2">TCPConnection:</span> <span style="color: #f92672">:</span> <span style="color: #f8f8f2">TCPConnection</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">_state</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">TCPClosed</span><span style="color: #f92672">:</span> <span style="color: #f92672">:</span> <span style="color: #f8f8f2">Instance</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">;</span>
+<span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPConnection</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">ChangeState</span> <span style="color: #f8f8f2">(TCPState</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">s)</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">_state</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">s;</span>
+<span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPConnection</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">ActiveOpen</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">_state</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">ActiveOpen(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+<span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPConnection</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">PassiveOpen</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">_state</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">PassiveOpen(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+<span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPConnection</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Close</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">_state</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Close(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+<span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPConnection</span><span style="color: #f92672">:</span><span style="color: #f8f8f2">Acknowledge</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">_state</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Acknowledge(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+<span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPConnection</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Synchronize</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">_state</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Synchronize(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+<span style="color: #f8f8f2">}</span></pre>
+
+		<p>В классе TCPState реализовано поведение по умолчанию для всех делегированных ему запросов. Он может также изменить состояние объекта TCPConnection посредством операции ChangeState. TCPState объявляется другом класса TCPConnection, что дает ему привилегированный доступ к этой операции:</p>
+
+		<pre>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Transmit</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">TCPOctetStream</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">ActiveOpen</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">PassiveOpen</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">:</span> <span style="color: #f92672">:</span> <span style="color: #f8f8f2">Close</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">:</span> <span style="color: #f92672">:</span> <span style="color: #f8f8f2">Synchronize</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">:</span> <span style="color: #f92672">:</span><span style="color: #f8f8f2">ChangeState</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">t,</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">s)</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">t</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">ChangeState(s)</span> <span style="color: #f8f8f2">;</span>
+<span style="color: #f8f8f2">}</span></pre>
+
+		<p>В подклассах TCPState реализовано поведение, зависящее от состояния. Со- единение TCP может находиться во многих состояниях: Established (установлено), Listening (прослушивание), Closed (закрыто) и т.д., и для каждого из них есть свой подкласс TCPState. Мы подробно рассмотрим три подкласса - TCPEstablished, TCPListen и TCPClosed:</p>
+
+		<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">TCPEstablished</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">TCPState</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+	<span style="color: #66d9ef">static</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">Instanced;</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Transmit</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">,</span> <span style="color: #f8f8f2">TCPOctetStream</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Close</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+<span style="color: #f8f8f2">};</span>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">TCPListen</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">TCPState</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+	<span style="color: #66d9ef">static</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">Instance();</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Send</span><span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #75715e">// ...</span>
+<span style="color: #f8f8f2">};</span>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">TCPClosed</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">TCPState</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+	<span style="color: #66d9ef">static</span> <span style="color: #f8f8f2">TCPState</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">Instanced;</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">ActiveOpen</span><span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">PassiveOpen</span><span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #75715e">// ...</span>
+<span style="color: #f8f8f2">};</span></pre>
+
+		<p>В подклассах TCPState нет никакого локального состояния, поэтому их можно разделять, так что потребуется только по одному экземпляру каждого класса. Уникальный экземпляр подкласса TCPState создается обращением к статичес- кой операции Instance.1 В подклассах TCPState реализовано зависящее от состояния поведение для тех запросов, которые допустимы в этом состоянии:</p>
+
+		<pre>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPClosed</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">ActiveOpen</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">t)</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #75715e">// послать SYN, получить SYN, ACK и т.д.</span>
+<span style="color: #f8f8f2">ChangeState(t,</span> <span style="color: #f8f8f2">TCPEstablished</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Instanced);</span>
+<span style="color: #f8f8f2">}</span></pre>
+
+		<p>Таким образом, каждый подкласс TCPState - это одиночка.</p>
+
+		<pre>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPClosed</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">PassiveOpen</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">t)</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">ChangeState(t,</span> <span style="color: #f8f8f2">TCPListen</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Instance)));</span>
+<span style="color: #f8f8f2">}</span>
+
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPEstablished</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Close</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">t)</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #75715e">// послать FIN, получить АСК для FIN</span>
+	<span style="color: #f8f8f2">ChangeStateft,</span> <span style="color: #f8f8f2">TCPListen</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Instance)))</span> <span style="color: #f8f8f2">;</span>
+<span style="color: #f8f8f2">}</span>
+
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPEstablished</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Transmit</span> <span style="color: #f8f8f2">(</span>
+	<span style="color: #f8f8f2">TCPConnection</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">t,</span> <span style="color: #f8f8f2">TCPOctetStream</span><span style="color: #f92672">*</span> <span style="color: #960050; background-color: #1e0010">о</span>
+<span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">t</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">ProcessOctet(o);</span>
+<span style="color: #f8f8f2">}</span>
+
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">TCPListen</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Send</span> <span style="color: #f8f8f2">(TCPConnection</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">t)</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #75715e">// послать SYN, получить SYN, АСК и т.д.</span>
+	<span style="color: #f8f8f2">ChangeStateft,</span> <span style="color: #f8f8f2">TCPEstablished</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Instanced);</span>
+<span style="color: #f8f8f2">}</span></pre>
+
+		<p>После выполнения специфичных для своего состояния действий эти операции вызывают ChangeState для изменения состояния объекта TCPConnection. У него нет никакой информации о протоколе TCP. Именно подклассы TCPState определяют переходы между состояниями и действия, диктуемые протоколом.</p>
+
+		<h2>Известные применения</h2>
+
+	<p>Ральф Джонсон и Джонатан Цвейг [JZ91] характеризуют паттерн состояние и описывают его применительно к протоколу TCP.</p>
+	<p>Наиболее популярные интерактивные программы рисования предоставляют &laquo;инструменты&raquo; для выполнения операций прямым манипулированием. Напри- мер, инструмент для рисования линий позволяет пользователю щелкнуть в про- извольной точке мышью, а затем, перемещая мышь, провести из этой точки линию. Инструмент для выбора позволяет выбирать некоторые фигуры. Обычно все имеющиеся инструменты размещаются в палитре. Работа пользователя заключается в том, чтобы выбрать и применить инструмент, но на самом деле поведение редактора варьируется при смене инструмента: посредством инструмента для рисо- вания мы создаем фигуры, при помощи инструмента выбора - выбираем их и т.д. Чтобы отразить зависимость поведения редактора от текущего инструмента, мож- но воспользоваться паттерном состояние.</p>
+	<p>Можно определить абстрактный класс Tool, подклассы которого реализуют зависящее от инструмента поведение. Графический редактор хранит ссылку на текущий объект Tool и делегирует ему поступающие запросы. При выборе инстру- мента редактор использует другой объект, что приводит к изменению поведения.</p>
+	<p>Данная техника используется в каркасах графических редакторов HotDraw [Joh92] и Unidraw [VL90]. Она позволяет клиентам легко определять новые виды&nbsp;инструментов. В HotDraw класс DrawingController переадресует запросы текущему объекту Tool. В Unidraw соответствующие классы называются Viewer и Tool. На приведенной ниже диаграмме классов схематично представлены ин- терфейсы классов Tool и DrawingController.</p>
+
+	<img src="../img/pages/8/3.jpg" alt="scheme"/>
+
+	<p>Описанный Джеймсом Коплиеном [Сор92] прием конверт-письмо (EnvelopeLetter) также относится к паттерну состояние. Техника конверт-письмо - это способ изменить класс объекта во время выполнения. Паттерн состояние является частным случаем, в нем акцент делается на работу с объектами, поведение кото- рых зависит от состояния</p>
+
+	<h2>Родственные паттерны</h2>
+	<p>Паттерн приспособленец подсказывает, как и когда можно разделять объек- ты класса State.</p>
+	<p>Объекты класса state часто бывают одиночками.</p>
+	<div class="up">
+		<a href="#col-100">go up</a>
+	</div>
+	<footer>
+		Copyright &copy; 2016 | Design: <span>EL_PASO</span>
+	</footer>
+</body>
+</html>

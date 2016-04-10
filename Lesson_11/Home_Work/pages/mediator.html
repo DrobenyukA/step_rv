@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<meta name=viewport content="width=device-width, initial-scale=1"/>	
+	<title>Mediator - pattern</title>
+	<link rel="stylesheet" href="../css/reset.css"/>
+	<link rel="stylesheet" href="../css/andriy_page_style.css"/>
+</head>
+<body>
+	<nav>
+		<div id="col-100"><a href="../index.html">Home</a></div>
+		<div class="row">
+			<div class="col"><a href="chain_of_responsibility_pattern.html">Chain of Responsibility</a></div>
+			<div class="col"><a href="command_pattern.html">Command</a></div>
+			<div class="col"><a href="Iterator_pattern.html">Iterator</a></div>
+			<div class="col"><a href="strategy.html">Strategy</a></div>
+			<div class="col"><a href="visitor.html">Visitor</a></div>
+		</div>
+		<div class="row">
+			<div class="col"><a href="interpreter_pattern.html">Interpreter</a></div>
+			<div class="col"><a href="template_method.html">Template Method</a></div>
+			<div class="col"><a href="#">Observer</a></div>
+			<div class="col"><a href="Memento.html">Memento</a></div>
+			<div class="col"><a href="state.html">State</a></div>
+		</div>
+		<div class="row-768">
+			<div class="col"><a href="chain_of_responsibility_pattern.html">Chain of Responsibility</a></div>
+			<div class="col"><a href="command_pattern.html">Command</a></div>
+			<div class="col"><a href="Iterator_pattern.html">Iterator</a></div>
+			<div class="col"><a href="strategy.html">Strategy</a></div>
+			<div class="col"><a href="visitor.html">Visitor</a></div>
+			<div class="col"><a href="interpreter_pattern.html">Interpreter</a></div>
+			<div class="col"><a href="template_method.html">Template Method</a></div>
+			<div class="col"><a href="#">Observer</a></div>
+			<div class="col"><a href="Memento.html">Memento</a></div>
+			<div class="col"><a href="state.html">State</a></div>
+		</div>
+	</nav>
+	<header>
+		<h1><span>Паттерн</span> <b>Mediator</b></h1>
+	</header>
+	<h2>Название и классификация паттерна</h2>
+	<p><b>П</b>осредник &ndash; паттерн поведения объектов.</p>
+	<h2>Назначение</h2>
+	<p>
+		<b>О</b>пределяет объект, инкапсулирующий способ взаимодействия множества объектов. Посредник обеспечивает слабую связанность системы, избавляя объекты от необходимости явно ссылаться друг на друга и позволяя тем самым независимо изменять взаимодействия между ними.
+	</p>
+	<h2>Мотивация</h2>
+	<p>
+		<b>О</b>бъектно-ориентированное проектирование способствует распределению не которого поведения между объектами. Но при этом в получившейся структуре объектов может возникнуть много связей или (в худшем случае) каждому объек ту придется иметь информацию обо всех остальных.
+	</p>
+	<p>
+		<b>Н</b>есмотря на то что разбиение системы на множество объектов в общем случае повышает степень повторного использования, однако изобилие взаимосвязей приводит к обратному эффекту. Если взаимосвязей слишком много, тогда система подобна монолиту и маловероятно, что объект сможет работать без поддержки других объектов. Более того, существенно изменить поведение системы практически невозможно, поскольку оно распределено между многими объектами. Если вы предпримете подобную попытку, то для настройки поведения системы вам придется определять множество подклассов.
+	</p>
+	<p>
+		<b>Р</b>ассмотрим реализацию диалоговых окон в графическом интерфейсе пользователя. Здесь располагается ряд виджетов: кнопки, меню, поля ввода и т.д., как показано на рисунке.
+	</p>
+	<p>
+		<b>Ч</b>асто между разными виджетами в диалоговом окне существуют зависимости. Например, если одно из полей ввода пустое, то определенная кнопка недоступна. При выборе из списка может измениться содержимое поля ввода. И наоборот,
+		<img src="../img/pages/5/m_p_1.jpg" alt="scheme" class="middle">
+		ввод текста в некоторое поле может автоматически привести к выбору одного или нескольких элементов списка. Если в поле ввода присутствует какой-то текст, то могут быть активизированы кнопки, позволяющие произвести определенное действие над этим текстом, например изменить либо удалить его.
+	</p>
+	<p>
+		<b>В</b> разных диалоговых окнах зависимости между виджетами могут быть различными. Поэтому, несмотря на то что во всех окнах встречаются однотипные виджеты, просто взять и повторно использовать готовые классы виджетов не удастся, придется производить настройку с целью учета зависимостей. Индивидуальная настройка каждого виджета &ndash; утомительное занятие, ибо участвующих классов слишком много.
+	</p>
+	<p>
+		<b>Т</b>ак, класс FontDialogDirector может служить посредником между виджетами в диалоговом окне. Объект этого класса «знает» обо всех виджетах в окне и координирует взаимодействие между ними, то есть выполняет функции центра коммуникаций.
+	</p>
+	<img src="../img/pages/5/m_p_2.jpg" alt="scheme" class="float_r">
+	<p>
+		<b>Н</b>а следующей диаграмме взаимодействий показано, как объекты кооперируются друг с другом, реагируя на изменение выбранного элемента списка.
+	</p>
+	<p>
+		<b>П</b>оследовательность событий, в результате которых информация о выбранном элемента списка передается в поле ввода, следующая:
+	</p>
+	<ol>
+		<li>
+			Список информирует распорядителя о происшедших в нем изменениях.
+		</li>
+		<li>
+			Распорядитель получает от списка выбранный элемент.
+		</li>
+		<li>
+			Распорядитель передает выбранный элемент полю ввода.
+		</li>
+		<li>
+			Теперь, когда поле ввода содержит какую-то информацию, распорядитель активизирует кнопки, позволяющие выполнить определенное действие (например, изменить шрифт на полужирный или курсив).
+		</li>
+	</ol>
+	<p>
+		<b>О</b>братите внимание на то, как распорядитель осуществляет посредничество между списком и полем ввода. Виджеты общаются друг с другом не напрямую, а через распорядитель. Им вообще не нужно владеть информацией друг о друге, они осведомлены лишь о существовании распорядителя. А коль скоро поведение локализовано в одном классе, то его несложно модифицировать или сделать совершенно другим путем расширения или замены этого класса.
+	</p>
+	<p>
+		<b>А</b>бстракцию FontDialogDirector можно было бы интегрировать в библиотеку классов так, как показано на рисунке.
+	</p>
+	<img src="../img/pages/5/m_p_3.jpg" alt="scheme">
+	<p>
+		<b>D</b>ialogDirector &mdash; это абстрактный класс, который определяет поведение диалогового окна в целом. Клиенты вызывают его операцию ShowDialog для отображения окна на экране. CreateWidgets - это абстрактная операция для создания виджетов в диалоговом окне. WidgetChanged - еще одна абстрактная операция; с ее помощью виджеты сообщают распорядителю об изменениях. Подклассы DialogDirector замещают операции CreateWidgets (для создания нужных виджетов) и WidgetChanged (для обработки извещений об изменениях).
+	</p>
+	<h2>Применимость</h2>
+	<p>
+		<b>И</b>спользуйте паттерн посредник, когда
+	</p>
+	<ul>
+		<li>
+			имеются объекты, связи между которыми сложны и четко определены. Получающиеся при этом взаимозависимости не структурированы и трудны для понимания;
+		</li>
+		<li>
+			нельзя повторно использовать объект, поскольку он обменивается информацией со многими другими объектами;
+		</li>
+		<li>
+			поведение, распределенное между несколькими классами, должно поддаваться настройке без порождения множества подклассов.
+		</li>
+	</ul>
+	<h2>Структура</h2>
+	<img src="../img/pages/5/m_p_4.jpg" alt="scheme" class="middle">
+	<h2>Типичная структура объектов.</h2>
+	<img src="../img/pages/5/m_p_5.jpg" alt="scheme" class="middle">
+	<h2>Участники</h2>
+	<ul>
+		<li>
+			<b>Mediator</b> (DialogDirector) - посредник;
+			<ul class="line">
+				<li>определяет интерфейс для обмена информацией с объектами Col league;</li>
+			</ul>
+		</li>
+		<li>
+			<b>ConcreteMediator</b> (FontDialogDirector) - конкретный посредник:
+			<ul class="line">
+				<li>реализует кооперативное поведение, координируя действия объектов Colleague;</li>
+				<li>владеет информацией о коллегах и подсчитывает их;</li>
+			</ul>
+		</li>
+		<li>
+			<b>Классы Colleague</b> (ListBox, EntryField) - коллеги:
+			<ul class="line">
+				<li>каждый класс Colleague «знает» о своем объекте Mediator;</li>
+				<li>
+					все коллеги обмениваются информацией только с посредником, так как при его отсутствии им пришлось бы общаться между собой напрямую.
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h2>Отношения</h2>
+	<p>
+		<b>К</b>оллеги посылают запросы посреднику и получают запросы от него. Посредник реализует кооперативное поведение путем переадресации каждого запроса подходящему коллеге (или нескольким коллегам).
+	</p>
+	<h2>Результаты</h2>
+	<p>
+		<b>У</b> паттерна посредник есть следующие достоинства и недостатки:
+	</p>
+	<ul>
+		<li>
+			<em>снижает число порождаемых подклассов.</em> Посредник локализует поведение, которое в противном случае пришлось бы распределять между несколькими объектами. Для изменения поведения нужно породить подклассы только от класса посредника Mediator, классы коллег Colleague можно использовать повторно без каких бы то ни было изменений;
+		</li>
+		<li>
+			<em>устраняет связанность между коллегами.</em> Посредник обеспечивает слабую связанность коллег. Изменять классы Colleague и Mediator можно независимо друг от друга;
+		</li>
+		<li>
+			<em>упрощает протоколы взаимодействия объектов.</em> Посредник заменяет дисциплину взаимодействия «все со всеми» дисциплиной «один со всеми», то есть один посредник взаимодействует со всеми коллегами. Отношения вида «один ко многим» проще для понимания, сопровождения и расширения;
+		</li>
+		<li>
+			<em>абстрагирует способ кооперирования объектов.</em> Выделение механизма посредничества в отдельную концепцию и инкапсуляция ее в одном объекте позволяет сосредоточиться именно на взаимодействии объектов, а не на их индивидуальном поведении. Это дает возможность прояснить имеющиеся в системе взаимодействия;
+		</li>
+		<li>
+			<em>централизует управление.</em> Паттерн посредник переносит сложность взаимодействия в класс-посредник. Поскольку посредник инкапсулирует протоколы, то он может быть сложнее отдельных коллег. В результате сам посредник становится монолитом, который трудно сопровождать.
+		</li>
+	</ul>
+	<h2>Реализация</h2>
+	<p>
+		<b>И</b>мейте в виду, что при реализации паттерна посредник может происходить:
+	</p>
+	<ul>
+		<li>
+			<em>избавление от абстрактного класса Mediator.</em> Если коллеги работают только с одним посредником, то нет необходимости определять абстрактный класс Mediator. Обеспечиваемая классом Mediator абстракция позволяет коллегам работать с разными подклассами класса Mediator и наоборот;
+		</li>
+		<li>
+			<em>обмен информацией между коллегами и посредником.</em> Коллеги должны обмениваться информацией со своим посредником только тогда, когда возникает представляющее интерес событие. Одним из подходов к реализации посредника является применение паттерна наблюдатель. Тогда классы коллег действуют как субъекты, посылающие извещения посреднику о любом изменении своего состояния. Посредник реагирует на них, сообщая об этом другим коллегам.
+			<br/>
+			Другой подход: в классе Mediator определяется специализированный интерфейс уведомления, который позволяет коллегам обмениваться информацией более свободно. В Smalltalk/V для Windows применяется некоторая форма делегирования: общаясь с посредником, коллега передает себя в качестве аргумента, давая посреднику возможность идентифицировать отправителя. Об этом подходе рассказывается в разделе «Пример кода», а о реализации в Smalltalk/V - в разделе «Известные применения».
+		</li>
+	</ul>
+	<h2>Пример кода</h2>
+	<p>
+		<b>Д</b>ля создания диалогового окна, обсуждавшегося в разделе «Мотивация», воспользуемся классом DialogDirector. Абстрактный класс DialogDirector определяет интерфейс распорядителей:
+	</p>
+	<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">DialogDirector</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+			<span style="color: #66d9ef">virtual</span> <span style="color: #f92672">-</span><span style="color: #f8f8f2">DialogDirector();</span>
+
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">ShowDialogf);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">WidgetChanged(Widget</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+
+<span style="color: #f8f8f2">protected:</span>
+	<span style="color: #f8f8f2">DialogDirector();</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">CreateWidgets()</span> <span style="color: #f92672">=</span> <span style="color: #ae81ff">0</span><span style="color: #f8f8f2">;</span>
+<span style="color: #f8f8f2">};</span></pre>
+	<p>
+		<b>Widget</b> &ndash; это абстрактный базовый класс для всех виджетов. Он располагает информацией о своем распорядителе:
+	</p>
+	<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Widget</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+	<span style="color: #f8f8f2">Widget(DialogDirector</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Changed</span><span style="color: #f8f8f2">();</span>
+
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">HandleMouse</span><span style="color: #f8f8f2">(MouseEventk</span> <span style="color: #f8f8f2">event);</span>
+			<span style="color: #75715e">// ...</span>
+<span style="color: #f8f8f2">private:</span>
+	<span style="color: #f8f8f2">DialogDirector</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_director;</span>
+<span style="color: #f8f8f2">};</span></pre>
+	<p>
+		<b>C</b>hanged вызывает операцию распорядителя WidgetChanged. С ее помощью виджеты информируют своего распорядителя о происшедших с ними изменениях:
+	</p>
+	<pre>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">Widget</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Changed</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">_director</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">WidgetChanged(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">),</span></pre>
+	<p>
+		<b>В</b> подклассах DialogDirector переопределена операция WidgetChanged для воздействия на нужные виджеты. Виджет передает ссылку на самого себя в качестве аргумента WidgetChanged, чтобы распорядитель имел информацию об изменившемся виджете. Подклассы DialogDirector переопределяют исключительно виртуальную функцию CreateWidgets для размещения в диалоговом окне нужных виджетов.
+	</p>
+	<p>
+		<b>L</b>istBox, Entry-Field и Button &ndash; это подклассы Widget для специализированных элементов интерфейса. В классе ListBox есть операция GetSelect ion для получения текущего множества выделенных элементов, а в классе Entry-Field &ndash; операция SetText для помещения текста в поле ввода:
+	</p>
+	<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">ListBox</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">Widget</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+	<span style="color: #f8f8f2">ListBox(DialogDirector</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+			
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">GetSelectionf);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">SetList</span><span style="color: #f8f8f2">(List</span><span style="color: #f92672">&lt;</span><span style="color: #66d9ef">char</span><span style="color: #f92672">*&gt;*</span> <span style="color: #f8f8f2">listltems);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">HandleMouse</span><span style="color: #f8f8f2">(MouseEvent</span><span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">event);</span>
+	<span style="color: #75715e">// ...</span>
+<span style="color: #f8f8f2">};</span>
+
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">EntryField</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">Widget</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+	<span style="color: #f8f8f2">EntryField(DialogDirector</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">SetText</span><span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">text);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span> <span style="color: #a6e22e">GetText</span><span style="color: #f8f8f2">();</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">HandleMouse(MouseEvent</span><span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">event),</span>
+	<span style="color: #75715e">// ...</span>
+<span style="color: #f8f8f2">};</span></pre>
+	<p>
+		<b>О</b>перация Changed вызывается при нажатии кнопки Button (простой виджет). Это происходит в операции обработки событий мыши HandleMouse:
+	</p>
+	<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Button</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">Widget</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+	<span style="color: #f8f8f2">Button(DialogDirector</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">SetText</span><span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #66d9ef">char</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">text);</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">HandleMouse</span><span style="color: #f8f8f2">(MouseEvent</span><span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">event);</span>
+	<span style="color: #75715e">// ...</span>
+<span style="color: #f8f8f2">};</span>
+
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">Button</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">HandleMouse</span> <span style="color: #f8f8f2">(MouseEvent</span><span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">event)</span>
+	<span style="color: #75715e">// ...</span>
+	<span style="color: #f8f8f2">Changed();</span>
+<span style="color: #f8f8f2">}</span></pre>
+	<p>
+		<b>К</b>ласс FontDialogDirector является посредником между всеми виджетами в диалоговом окне. FontDialogDirector - это подкласс класса DialogDirector:
+	</p>
+	<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">FontDialogDirector</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">DialogDirector</span> <span style="color: #f8f8f2">{</span>
+<span style="color: #f8f8f2">public:</span>
+		<span style="color: #f8f8f2">FontDialogDirector();</span>
+		<span style="color: #66d9ef">virtual</span> <span style="color: #f92672">-</span><span style="color: #f8f8f2">FontDialogDirector();</span>
+		<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">WidgetChanged</span><span style="color: #f8f8f2">(Widget</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+
+<span style="color: #f8f8f2">protected:</span>
+		<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">CreateWidgets</span><span style="color: #f8f8f2">();</span>
+
+<span style="color: #f8f8f2">private:</span>
+		<span style="color: #f8f8f2">Button</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_ok;</span>
+		<span style="color: #f8f8f2">Button</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_cancel;</span>
+		<span style="color: #f8f8f2">ListBox</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_fontList;</span>
+		<span style="color: #f8f8f2">EntryField</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_fontNarae;</span>
+<span style="color: #f8f8f2">};</span></pre>
+	<p>
+		<b>F</b>ontDialogDirector отслеживает все виджеты, которые ранее поместил в диалоговое окно. Переопределенная в нем операция CreateWidgets создает виджеты и инициализирует ссылки на них:
+	</p>
+	<pre>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">FontDialogDirector</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">CreateWidgets</span> <span style="color: #f8f8f2">(}</span> <span style="color: #f8f8f2">{</span>
+		<span style="color: #f8f8f2">_ok</span> <span style="color: #f92672">=</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">Button(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+		<span style="color: #f8f8f2">_cancel</span> <span style="color: #f92672">=</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">Button(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+		<span style="color: #f8f8f2">_fontList</span> <span style="color: #f92672">=</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">ListBox(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+		<span style="color: #f8f8f2">_fontName</span> <span style="color: #f92672">=</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">EntryField(</span><span style="color: #66d9ef">this</span><span style="color: #f8f8f2">);</span>
+		  
+		<span style="color: #75715e">// поместить в список названия шрифтов</span>
+
+		<span style="color: #75715e">// разместить все виджеты в диалоговом окнеeWidgets();</span></pre>
+	<p>
+		<b>О</b>перация WidgetChanged обеспечивает правильную совместную работу виджетов:
+	</p>
+	<pre>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">FontDialogDirector</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">WidgetChanged</span> <span style="color: #f8f8f2">(</span>
+		<span style="color: #f8f8f2">Widget</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">theChangedWidget</span>
+
+		<span style="color: #66d9ef">if</span> <span style="color: #f8f8f2">(theChangedWidget</span> <span style="color: #f92672">==</span> <span style="color: #f8f8f2">_fontList)</span> <span style="color: #f8f8f2">{</span>
+		    <span style="color: #f8f8f2">_fontName</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">SetText(_fontList</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">GetSelection())</span>
+
+		<span style="color: #f8f8f2">}</span> <span style="color: #66d9ef">else</span> <span style="color: #66d9ef">if</span> <span style="color: #f8f8f2">(theChangedWidget</span> <span style="color: #f92672">==</span> <span style="color: #f8f8f2">_ok)</span> <span style="color: #f8f8f2">{</span>
+		  <span style="color: #75715e">// изменить шрифт и уничтожить диалоговое окно</span>
+		  <span style="color: #75715e">// ...</span>
+
+		<span style="color: #f8f8f2">}</span> <span style="color: #66d9ef">else</span> <span style="color: #66d9ef">if</span> <span style="color: #f8f8f2">(theChangedWidget</span> <span style="color: #f92672">==</span> <span style="color: #f8f8f2">_cancel)</span> <span style="color: #f8f8f2">{</span>
+		  <span style="color: #75715e">// уничтожить диалоговое ок</span>
+		<span style="color: #f8f8f2">}</span>
+<span style="color: #f8f8f2">}</span></pre>
+	<p>
+		<b>С</b>ложность операции WidgetChanged возрастает пропорционально сложности окна диалога. Создание очень больших диалоговых окон нежелательно и по другим причинам, но в других приложениях сложность посредника может свести на нет его преимущества.
+	</p>
+	<h2>Известные применения</h2>
+	<p>
+		<b>И</b> в ЕТ++ [WGM88], и в библиотеке классов THINK С [Sym93b] применяются похожие на нашего распорядителя объекты для осуществления посредничества между виджетами в диалоговых окнах.
+	</p>
+	<p>
+		<b>А</b>рхитектура приложения в Smalltalk/V для Windows основана на структуре посредника [LaL94]. В этой среде приложение состоит из окна Window, которое содержит набор панелей. В библиотеке есть несколько предопределенных объектов-панелей Рапе, например: TextPane, ListBox, Button и т.д. Их можно использовать без подклассов. Разработчик приложения порождает подклассы только от класса ViewManager (диспетчер видов), отвечающего за обмен информацией между панелями. ViewManager - это посредник, каждая панель «знает» своего диспетчера, который считается «владельцем» панели. Панели не ссылаются друг на друга напрямую.
+	</p>
+	<p>
+		<b>Н</b>а изображенной диаграмме объектов показан мгновенный снимок работающего приложения.
+	</p>
+	<img src="../img/pages/5/m_p_6.jpg" alt="scheme">
+	<p>
+		<b>В</b> Smalltalk/V для обмена информацией между объектами Рапе и ViewManager используется механизм событий. Панель генерирует событие для получения данных от своего посредника или для информирования его о чем-то важном. С каждым событием связан символ (например, #select), который однозначно его идентифицирует. Диспетчер видов регистрирует вместе с панелью селектор метода, который является обработчиком события. Из следующего фрагмента кода видно, как объект ListPane создается внутри подкласса ViewManager и как ViewManager регистрирует обработчик события #select:
+	</p>
+	<pre>
+		<span style="color: #f8f8f2">self</span> <span style="color: #f8f8f2">addSubpane</span><span style="color: #f92672">:</span> <span style="color: #f8f8f2">(ListPane</span> <span style="color: #66d9ef">new</span>
+	  <span style="color: #f8f8f2">paneName:</span> <span style="color: #960050;">&#39;</span><span style="color: #f8f8f2">myListPane</span><span style="color: #960050;">&#39;</span><span style="color: #f8f8f2">;</span>
+	  <span style="color: #f8f8f2">owner:</span> <span style="color: #f8f8f2">self;</span>
+	  <span style="color: #f8f8f2">when:</span> <span style="color: #960050;">#</span><span style="color: #f8f8f2">select</span> <span style="color: #f8f8f2">perform</span><span style="color: #f92672">:</span> <span style="color: #960050;">#</span><span style="color: #f8f8f2">listSelect</span><span style="color: #f92672">:</span><span style="color: #f8f8f2">).</span></pre>
+	<p>
+		<b>П</b>ри координации сложных обновлений также требуется паттерн посредник. Примером может служить класс ChangeManager, упомянутый в описании паттерна наблюдатель. Этот класс осуществляет посредничество между субъектами и наблюдателями, чтобы не делать лишних обновлений. Когда объект изменяется, он извещает ChangeManager, который координирует обновление и информирует все необходимые объекты.
+	</p>
+	<p>
+		<b>А</b>налогичным образом посредник применяется в графических редакторах Unidraw [VL90], где используется класс CSolver, следящий за соблюдением ограничений связанности между коннекторами. Объекты в графических редакторах могут быть визуально соединены между собой различными способами. Коннекторы полезны в приложениях, которые автоматически поддерживают связанность, например в редакторах диаграмм и в системах проектирования электронных схем. Класс CSolver является посредником между коннекторами. Он разрешает ограничения связанности и обновляет позиции коннекторов так, чтобы отразить изменения.
+	</p>
+	<h2>Родственные паттерны</h2>
+	<p>
+		<b>Ф</b>асад отличается от посредника тем, что абстрагирует некоторую подсистему объектов для предоставления более удобного интерфейса. Его протокол однонаправленный, то есть объекты фасада направляют запросы классам подсистемы, но не наоборот. Посредник же обеспечивает совместное поведение, которое объекты-коллеги не могут или не «хотят» реализовывать, и его протокол двунаправленный.
+	</p>
+	<p>
+		<b>К</b>оллеги могут обмениваться информацией с посредником посредством паттерна наблюдатель.
+	</p>
+	<div class="up">
+		<a href="#col-100">go up</a>
+	</div>
+	<footer>
+		Copyright &copy; 2016 | Design: <span>EL_PASO</span>
+	</footer>
+</body>
+</html>

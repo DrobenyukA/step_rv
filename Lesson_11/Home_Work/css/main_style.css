@@ -1,0 +1,19 @@
+@font-face {
+	font-family: "RobotoSlab";
+	src: url('fonts/RobotoSlab-Regular.ttf');
+	src: url('fonts/RobotoSlab-Bold.ttf');
+	src: url('fonts/RobotoSlab-Light.ttf');
+	src: url('fonts/RobotoSlab-Thin.ttf');
+}
+
+@font-face {
+	font-family: "Roboto";
+	src: url('fonts/RobotoCondensed-Light.ttf');
+	src: url('fonts/RobotoCondensed-Bold.ttf');
+}
+
+body{
+	font-family: 'EB Garamond', serif;
+    font-size: 26px;
+    color:#2C2C2C;
+}

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<meta name=viewport content="width=device-width, initial-scale=1"/>	
+	<title>Memento - pattern</title>
+	<link rel="stylesheet" href="../css/reset.css"/>
+	<link rel="stylesheet" href="../css/andriy_page_style.css"/>
+</head>
+<body>
+	<nav>
+		<div id="col-100"><a href="../index.html">Home</a></div>
+		<div class="row">
+			<div class="col"><a href="chain_of_responsibility_pattern.html">Chain of Responsibility</a></div>
+			<div class="col"><a href="command_pattern.html">Command</a></div>
+			<div class="col"><a href="Iterator_pattern.html">Iterator</a></div>
+			<div class="col"><a href="strategy.html">Strategy</a></div>
+			<div class="col"><a href="visitor.html">Visitor</a></div>
+		</div>
+		<div class="row">
+			<div class="col"><a href="interpreter_pattern.html">Interpreter</a></div>
+			<div class="col"><a href="template_method.html">Template Method</a></div>
+			<div class="col"><a href="#">Observer</a></div>
+			<div class="col"><a href="mediator.html">Mediator</a></div>
+			<div class="col"><a href="state.html">State</a></div>
+		</div>
+		<div class="row-768">
+			<div class="col"><a href="chain_of_responsibility_pattern.html">Chain of Responsibility</a></div>
+			<div class="col"><a href="command_pattern.html">Command</a></div>
+			<div class="col"><a href="Iterator_pattern.html">Iterator</a></div>
+			<div class="col"><a href="strategy.html">Strategy</a></div>
+			<div class="col"><a href="visitor.html">Visitor</a></div>
+			<div class="col"><a href="interpreter_pattern.html">Interpreter</a></div>
+			<div class="col"><a href="template_method.html">Template Method</a></div>
+			<div class="col"><a href="#">Observer</a></div>
+			<div class="col"><a href="mediator.html">Mediator</a></div>
+			<div class="col"><a href="state.html">State</a></div>
+		</div>
+	</nav>
+	<header>
+		<h1><span>Паттерн</span> <b>Memento</b></h1>
+	</header>
+	<h2>Название и классификация паттерна</h2>
+	<p>
+		<b>Х</b>ранитель - паттерн поведения объектов.
+	</p>
+	<h2>Назначение</h2>
+	<p>
+		<b>Н</b>е нарушая инкапсуляции, фиксирует и выносит за пределы объекта его внутреннее состояние так, чтобы позднее можно было восстановить в нем объект.
+	</p>
+	<h2>Известен также под именем</h2>
+	<p>
+		<b>T</b>oken (лексема).
+	</p>
+	<h2>Мотивация</h2>
+	<p>
+		<b>И</b>ногда необходимо тем или иным способом зафиксировать внутреннее состояние объекта. Такая потребность возникает, например, при реализации контрольныхточек и механизмов отката, позволяющих пользователю отменить пробную операцию или восстановить состояние после ошибки. Его необходимо где-то сохранить,чтобы позднее восстановить в нем объект. Но обычно объекты инкапсулируют все	свое состояние или хотя бы его часть, делая его недоступным для других объектов, так что сохранить состояние извне невозможно. Раскрытие же состояния явилось бы нарушением принципа инкапсуляции и поставило бы под угрозу надежность и расширяемость приложения.
+	</p>
+	<img src="../img/pages/6/mom_p_1.jpg" alt="picture" class="float_r"/>
+	<p>
+		<b>Р</b>ассмотрим, например, графический редактор, который поддерживает связанность объектов. Пользователь может соединить два прямоугольника линией, и они останутся в таком положении при любых перемещениях. Редактор сам перерисовывает линию, сохраняя связанность конфигурации.
+	</p>
+	<p>
+		<b>С</b>истема разрешения ограничений - хорошо известный способ поддержания связанности между объектами. Ее функции могут выполняться объектом класса ConstraintSolver, который регистрирует вновь создаваемые соединения и генерирует описывающие их математические уравнения. А когда пользователь каким-то образом модифицирует диаграмму, объект решает эти уравнения. Результаты вычислений объект ConstraintSolver использует для перерисовки графики так, чтобы были сохранены все соединения.
+	</p>
+	<img src="../img/pages/6/mom_p_2.jpg" alt="picture" />
+	<p>
+		<b>П</b>оддержка отката операций в приложениях не так проста, как может показаться на первый взгляд. Очевидный способ откатить операцию перемещения - это сохранить расстояние между старым и новым положением, а затем переместить объект на такое же расстояние назад. Однако при этом не гарантируется, что все объекты окажутся там же, где находились. Предположим, что в способе расположения соединительной линии есть некоторая свобода. Тогда, переместив прямоугольник на прежнее место, мы можем не добиться желаемого эффекта.
+	</p>
+	<p>
+		<b>О</b>ткрытого интерфейса ConstraintSolver иногда не хватает для точного отката всех изменений смежных объектов. Механизм отката должен работать в тесном взаимодействии с ConstraintSolver для восстановления предыдущего состояния, но необходимо также позаботиться о том, чтобы внутренние детали ConstraintSolver не были доступны этому механизму.
+	</p>
+	<p>
+		<b>П</b>аттерн хранитель поможет решить данную проблему. Хранитель — это объект, в котором сохраняется внутреннее состояния другого объекта - хозяина хранителя. Для работы механизма отката нужно, чтобы хозяин предоставил хранитель, когда возникнет необходимость записать контрольную точку состояния хозяина. Только хозяину разрешено помещать в хранитель информацию и извлекать ее оттуда, для других объектов хранитель непрозрачен.
+	</p>
+	<p>
+		<b>В</b> примере графического редактора, который обсуждался выше, в роли хозяина может выступать объект ConstraintSolver. Процесс отката характеризуется такой последовательностью событий:
+	</p>
+	<ol>
+		<li>
+			Редактор запрашивает хранитель у объекта ConstraintSolver в процессе выполнения операции перемещения.
+		</li>
+		<li>
+			ConstraintSolver создает и возвращает хранитель, в данном случае экземпляр класса SolverState..Хранитель SolverState содержит структуры данных, описывающие текущее состояние внутренних уравнений и переменных ConstraintSolver.
+		</li>
+		<li>
+			Позже, когда пользователь отменяет операцию перемещения, редактор возвращает SolverState объекту ConstraintSolver.
+		</li>
+		<li>
+			Основываясь на информации, которая хранится в объекте SolverState, ConstraintSolver изменяет свои внутренние структуры, возвращая уравнения и переменные в первоначальное состояние.
+		</li>
+	</ol>
+	<p>
+		<b>Т</b>акая организация позволяет объекту ConstraintSolver «знакомить» другие объекты с информацией, которая ему необходима для возврата в предыдущее состояние, не раскрывая в то же время свою структуру и представление.
+	</p>
+	<h2>Применимость</h2>
+	<p>
+		<b>И</b>спользуйте паттерн хранитель, когда:
+	</p>
+	<ul>
+		<li>необходимо сохранить мгновенный снимок состояния объекта (или его части), чтобы впоследствии объект можно было восстановить в том же состоянии;</li>
+		<li>прямое получение этого состояния раскрывает детали реализации и нарушает инкапсуляцию объекта.</li>
+	</ul>
+	<h2>Структура</h2>
+	<img src="../img/pages/6/mom_p_3.jpg" alt="scheme" class="middle"/>
+	<h2>Участники</h2>
+	<ul>
+		<li>
+			<b>Memento</b> (SolverState) &ndash; хранитель:
+			<ul class="line">
+				<li>
+					сохраняет внутреннее состояние объекта Originator. Объем сохраняемой информации может быть различным и определяется потребностями хозяина;
+				</li>
+				<li>
+					запрещает доступ всем другим объектам, кроме хозяина. По существу, у хранителей есть двалнтерфейса. «Посыльный» Caretaker «видит» лишь «z/зкмм» интерфейс хранителя - он может только передавать хранителя другим объектам. Напротив, хозяину доступен «широкий» интерфейс, который обеспечивает доступ ко всем данным, необходимым для восстановления в прежнем состоянии. Идеальный вариант - когда только хозяину, создавшему хранитель, открыт доступ к внутреннему состоянию последнего;
+				</li>
+			</ul>
+		</li>
+		<li>
+			<b>Originator</b> (ConstraintSolver) &ndash; хозяин:
+			<ul class="line">
+				<li>
+					создает хранитель, содержащего снимок текущего внутреннего состояния;
+				</li>
+				<li>
+					использует хранитель для восстановления внутреннего состояния;
+				</li>
+			</ul>
+		</li>
+		<li>
+			<b>Caretaker</b> (механизм отката) &ndash; посыльный:
+			<ul class="line">
+				<li>
+					отвечает за сохранение хранителя;
+				</li>
+				<li>
+					не производит никаких операций над хранителем и не исследует его внутреннее содержимое.
+				</li>
+			</ul>
+		</li>
+	</ul>
+	<h2>Отношения</h2>
+	<ul>
+		<li>
+			посыльный запрашивает хранитель у хозяина, некоторое время держит его у себя, а затем возвращает хозяину, как видно на представленной диаграмме взаимодействий.
+			<img src="../img/pages/6/mom_p_4.jpg" alt="scheme"/>
+			Иногда этого не происходит, так как последнему не нужно восстанавливать прежнее состояние;
+		</li>
+		<li>
+			хранители пассивны. Только хозяин, создавший хранитель, имеет доступк информации о состоянии.
+		</li>
+	</ul>
+	<h2>Результаты</h2>
+	<p>
+		<b>Х</b>арактерные особенности паттерна хранитель:
+	</p>
+	<ul>
+		<li>
+			<em>сохранение границ инкапсуляции.</em> Хранитель позволяет избежать раскрытия информации, которой должен распоряжаться только хозяин, но которую тем не менее необходимо хранить вне последнего. Этот паттерн экранирует объекты от потенциально сложного внутреннего устройства хозяина, не изменяя границы инкапсуляции;
+		</li>
+		<li>
+			<em>упрощение структуры хозяина.</em> При других вариантах дизайна, направленного на сохранение границ инкапсуляции, хозяин хранит внутри себя версии внутреннего состояния, которое запрашивали клиенты. Таким образом, вся ответственность за управление памятью лежит на хозяине. При перекладывании заботы о запрошенном состоянии на клиентов упрощается структура хозяина, а клиентам дается возможность не информировать хозяина о том, что они закончили работу;
+		</li>
+		<li>
+			<em>значительные издержки при использовании хранителей.</em> С хранителями могут быть связаны заметные издержки, если хозяин должен копировать большой объем информации для занесения в память хранителя или если клиенты создают и возвращают хранителей достаточно часто. Если плата за инкапсуляцию и восстановление состояния хозяина велика, то этот паттерн не всегда подходит (см. также обсуждение инкрементности в разделе «Реализация»);
+		</li>
+		<li>
+			<em>определение «узкого» и «широкого» интерфейсов.</em> В некоторых языках сложно гарантировать, что только хозяин имеет доступ к состоянию хранителя;
+		</li>
+		<li>
+			<em>скрытая плата за содержание хранителя.</em> Посыльный отвечает за удаление хранителя, однако не располагает информацией о том, какой объем информации о состоянии скрыт в нем. Поэтому нетребовательный к ресурсам посыльный может расходовать очень много памяти при работе с хранителем.
+		</li>
+	</ul>
+	<h2>Реализация</h2>
+	<p>
+		<b>П</b>ри реализации паттерна хранитель следует иметь в виду:
+	</p>
+	<ul>
+		<li>
+			<em>языковую поддержку.</em> У хранителей есть два интерфейса: «широкий» для хозяев и «узкий» для всех остальных объектов. В идеале язык реализации должен поддерживать два уровня статического контроля доступа. В C++ это возможно, если объявить хозяина другом хранителя и сделать закрытым «широкий» интерфейс последнего (с помощью ключевого слова private). Открытым (public) остается только «узкий» интерфейс. Например:
+			<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">State</span><span style="color: #f8f8f2">;</span>
+
+	<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Originator</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">public:</span>
+	<span style="color: #f8f8f2">Memento</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">CreateMemento();</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">SetMemento</span><span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">Memento</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #75715e">// ...</span>
+	<span style="color: #f8f8f2">private:</span>
+	<span style="color: #f8f8f2">State</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_state;</span> <span style="color: #75715e">// внутренние структуры данных</span>
+	<span style="color: #75715e">// ...</span>
+	<span style="color: #f8f8f2">};</span>
+	<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Memento</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">public:</span>
+	<span style="color: #75715e">// узкий открытый интерфейс</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #f92672">~</span><span style="color: #f8f8f2">Memento();</span>
+	<span style="color: #f8f8f2">private:</span>
+	<span style="color: #75715e">// закрытые члены доступны только хозяину Originator</span>
+	<span style="color: #66d9ef">friend</span> <span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Originator</span><span style="color: #f8f8f2">;</span>
+	<span style="color: #f8f8f2">Memento();</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">SetState</span><span style="color: #f8f8f2">(State</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #f8f8f2">State</span><span style="color: #f92672">*</span> <span style="color: #a6e22e">GetState</span><span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">;</span>
+	<span style="color: #75715e">// ...</span>
+	<span style="color: #f8f8f2">private:</span>
+	<span style="color: #f8f8f2">State</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">state;</span>
+	<span style="color: #75715e">// ...</span>
+	<span style="color: #f8f8f2">};</span>
+			</pre>
+			</li>
+			<li>
+				<em>сохранение инкрементых изменений.</em> Если хранители создаются и возвращаются своему хозяину в предсказуемой последовательности, то хранитель может сохранить лишь изменения во внутреннем состоянии хозяина.
+				<br/>
+				Например, допускающие отмену команды в списке истории могут пользоваться хранителями для восстановления первоначального состояния (см. описание паттерна команда). Список истории предназначен только для отмены и повтора команд. Это означает, что хранители могут работать лишь с изменениями, сделанными командой, а не с полным состоянием объекта. В примере из раздела «Мотивация» объект, отменяющий ограничения, может содержать только такие внутренние структуры, которые изменяются с целью сохранить линию, соединяющую прямоугольники, а не абсолютные позиции всех объектов.
+			</li>
+		</ul>
+		<h2>Пример кода</h2>
+		<p>
+			<b>П</b>риведенный пример кода на языке C++ иллюстрирует рассмотренный выше пример класса ConstraintSolver для разрешения ограничений. Мы используем объекты MoveCommand (см. паттерн команда) для выполнения и отмены переноса графического объекта из одного места в другое. Графический редактор вызывает операцию Execute объекта-команды, чтобы переместить объект, и команду Unexecute, чтобы отменить перемещение. В команде хранятся координаты места назначения, величина перемещения и экземпляр класса ConstraintSolverMemento &ndash; хранителя, содержащего состояние объекта ConstraintSolver:
+		</p>
+		<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Graphic</span><span style="color: #f8f8f2">;</span>
+<span style="color: #75715e">// базовый класс графических объектов</span>
+
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">MoveCoitimand</span> <span style="color: #f8f8f2">{</span>
+	public:
+	<span style="color: #f8f8f2">MoveCommand</span> <span style="color: #f8f8f2">(Graphic</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">target,</span> <span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">Point</span><span style="color: #f92672">&amp;</span> <span style="color: #f8f8f2">delta);</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Execute</span> <span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Unexecute</span> <span style="color: #f8f8f2">(</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+	<span style="color: #f8f8f2">private:</span>
+	<span style="color: #f8f8f2">ConstraintSolverMemento</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_state</span> <span style="color: #f8f8f2">;</span>
+	<span style="color: #f8f8f2">Point</span> <span style="color: #f8f8f2">_delta;</span>
+	<span style="color: #f8f8f2">Graphic</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_target;</span>
+<span style="color: #f8f8f2">};</span></pre>
+			<p>
+				<b>О</b>граничения связанности устанавливаются классом ConstraintSolver. Его основная функция-член, называемая Solve, отменяет ограничения, регистрируемые операцией AddConstraint. Для поддержки отмены действий состояние объекта ConstraintSolver можно разместить в экземпляре класса ConstraintSolverMemento с помощью операции CreateMemento. В предыдущее состояние объект ConstraintSolver возвращается посредством операции SetMemento. ConstraintSolver является примером паттерна одиночка:
+			</p>
+			<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">ConstraintSolver</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">public:</span>
+	<span style="color: #66d9ef">static</span> <span style="color: #f8f8f2">ConstraintSolver</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">Instanced;</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Solve</span><span style="color: #f8f8f2">();</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">AddConstraint</span><span style="color: #f8f8f2">(</span>
+	<span style="color: #f8f8f2">Graphic</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">startConnection,</span> <span style="color: #f8f8f2">Graphic</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">endConnection</span>
+	<span style="color: #f8f8f2">);</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">RemoveConstraint</span><span style="color: #f8f8f2">(</span>
+	<span style="color: #f8f8f2">Graphic</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">startConnection,</span> <span style="color: #f8f8f2">Graphic</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">endConnection</span>
+	<span style="color: #f8f8f2">);</span>
+
+	<span style="color: #f8f8f2">ConstraintSolverMemento</span><span style="color: #f92672">*</span> <span style="color: #a6e22e">CreateMemento</span><span style="color: #f8f8f2">();</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">SetMemento</span><span style="color: #f8f8f2">(ConstraintSolverMemento</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #f8f8f2">private:</span>
+	<span style="color: #75715e">// нетривиальное состояние и операции</span>
+	<span style="color: #75715e">// для поддержки семантики связанности</span>
+	<span style="color: #f8f8f2">};</span>
+
+	<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">ConstraintSolverMemento</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">public:</span>
+	<span style="color: #66d9ef">virtual</span> <span style="color: #f92672">-</span><span style="color: #f8f8f2">ConstraintSolverMemento();</span>
+	<span style="color: #f8f8f2">private:</span>
+	<span style="color: #66d9ef">friend</span> <span style="color: #66d9ef">class</span> <span style="color: #a6e22e">ConstraintSolver</span><span style="color: #f8f8f2">;</span>
+	<span style="color: #f8f8f2">ConstraintSolverMemento();</span>
+
+	<span style="color: #75715e">// закрытое состояние Solver</span>
+<span style="color: #f8f8f2">};</span></pre>
+				<p>
+					<b>С</b> такими интерфейсами мы можем реализовать функции-члены Execute и Unexecute в классе MoveCommand следующим образом:
+				</p>
+				<pre>
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">MoveCommand</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Execute</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">ConstraintSolver</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">solver</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">ConstraintSolver</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Instance();</span>
+	<span style="color: #f8f8f2">_state</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">solver</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">CreateMemento();</span> <span style="color: #75715e">// создание хранителя</span>
+	<span style="color: #f8f8f2">_target</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Move(_delta);</span>
+	<span style="color: #f8f8f2">solver</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Solve();</span>
+<span style="color: #f8f8f2">}</span>
+
+<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">MoveCommand</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Unexecute</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">ConstraintSolver</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">solver</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">ConstraintSolver</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Instance();</span>
+	<span style="color: #f8f8f2">_target</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Move(</span><span style="color: #f92672">-</span><span style="color: #f8f8f2">_delta);</span>
+	<span style="color: #f8f8f2">solver</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">SetMemento(_state);</span> <span style="color: #75715e">// восстановление состояния хозяина</span>
+	<span style="color: #f8f8f2">solver</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Solve(};</span>
+<span style="color: #f8f8f2">}</span></pre>
+					<p>
+						<b>E</b>xecute запрашивает хранитель ConstraintSolverMemento перед началом перемещения графического объекта. Unexecute возвращает объект на прежнее место, восстанавливает состояние Solver и обращается к последнему с целью отменить ограничения.
+					</p>
+					<h2>Известные применения</h2>
+					<p>
+						<b>П</b>редыдущий пример основан на поддержке связанности в каркасе Unidraw с помощью класса CSolver [VL90].
+					</p>
+					<p>
+						<b>В</b> коллекциях языка Dylan [App92] для итерации предусмотрен интерфейс, напоминающий паттерн хранитель. Для этих коллекций существует понятие состояния объекта, которое является хранителем, представляющим состояние итерации.Представление текущего состояния каждой коллекции может быть любым, но оно полностью скрыто от клиентов. Решение, используемое в языке Dylan, можно написать на C++ следующим образом:
+					</p>
+					<pre>
+<span style="color: #66d9ef">template</span> <span style="color: #f92672">&lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Item</span><span style="color: #f92672">&gt;</span>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Collection</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">public:</span>
+	<span style="color: #f8f8f2">Collection();</span>
+
+	<span style="color: #f8f8f2">IterationState</span><span style="color: #f92672">*</span> <span style="color: #a6e22e">CreatelnitialState</span><span style="color: #f8f8f2">();</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Next</span><span style="color: #f8f8f2">(IterationState</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span>
+	<span style="color: #66d9ef">bool</span> <span style="color: #f8f8f2">IsDone(</span><span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">IterationState</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+	<span style="color: #f8f8f2">Item</span> <span style="color: #f8f8f2">Currentltemfconst</span> <span style="color: #f8f8f2">IterationState</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+	<span style="color: #f8f8f2">IterationState</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">Copy(</span><span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">IterationState</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">)</span> <span style="color: #66d9ef">const</span><span style="color: #f8f8f2">;</span>
+
+	<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">Appendfconst</span> <span style="color: #f8f8f2">Item</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Remove</span><span style="color: #f8f8f2">(</span><span style="color: #66d9ef">const</span> <span style="color: #f8f8f2">Item</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">);</span>
+	<span style="color: #75715e">// ...</span>
+<span style="color: #f8f8f2">};</span></pre>
+						<p>
+							<b>О</b>перация CreatelnitialState возвращает инициализированный объект IterationState для коллекции. Операция Next переходит к следующему объекту в порядке итерации, по сути дела, она увеличивает на единицу индекс итерации. Операция IsDone возвращает true, если в результате выполнения Next мы оказались за последним элементом коллекции. Операция Cur rent It em разыменовывает объект состояния и возвращает тот элемент коллекции, на который он ссылается. Сору возвращает копию данного объекта состояния. Это имеет смысл, когда необходимо оставить закладку в некотором месте, пройденном во время итерации.
+						</p>
+						<p>
+							<b>Е</b>сли есть класс ItemType, то обойти коллекцию, составленную из его экземп ляров, можно так:
+						</p>
+						<pre>
+<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">ItemType</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">public:</span>
+	<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">Process</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">;</span>
+	<span style="color: #75715e">// ...</span>
+	<span style="color: #f8f8f2">};</span>
+
+	<span style="color: #f8f8f2">Collection</span><span style="color: #f92672">&lt;</span><span style="color: #f8f8f2">ItemType</span><span style="color: #f92672">*&gt;</span> <span style="color: #f8f8f2">aCollection;</span>
+	<span style="color: #f8f8f2">IterationState</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">state;</span>
+
+	<span style="color: #f8f8f2">state</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">aCollection.CreatelnitialStatef);</span>
+
+	<span style="color: #66d9ef">while</span> <span style="color: #f8f8f2">(laCollection.IsDone(state))</span> <span style="color: #f8f8f2">{</span>
+	<span style="color: #f8f8f2">aCollection.Currentltem(state)</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Process()</span>
+	<span style="color: #f8f8f2">aCollection.Next(state);</span>
+<span style="color: #f8f8f2">}</span>
+<span style="color: #66d9ef">delete</span> <span style="color: #f8f8f2">state;</span></pre>
+	<p>
+		<b>У</b> интерфейса итерации, основанного на паттерне хранитель, есть два преимущества:
+	</p>
+	<ul>
+		<li>
+			с одной коллекцией может быть связано несколько активных состояний (тоже самое верно и для паттерна итератор);
+		</li>
+		<li>
+			не требуется нарушать инкапсуляцию коллекции для поддержки итерации. Хранитель интерпретируется только самой коллекцией, больше никто к нему доступа не имеет. При других подходах приходится нарушать инкапсуляцию, объявляя классы итераторов друзьями классов коллекций (см. описание паттерна итератор). В случае с хранителем ситуация противоположная: класс коллекции Collection является другом класса IteratorState.
+		</li>
+	</ul>
+	<p>
+		<b>В</b> библиотеке QOCA для разрешения ограничений в хранителях содержится информация об изменениях. Клиент может получить хранитель, характеризующий текущее решение системы ограничений. В хранителе находятся только те переменные ограничений, которые были преобразованы со времени последнего решения. Обычно при каждом новом решении изменяется лишь небольшое подмножество переменных Solver. Но этого достаточно, чтобы вернуть Solver к предыдущему решению; для отката к более ранним решениям необходимо иметь все промежуточные хранители. Поэтому передавать хранители в произвольном порядке нельзя. QOCA использует механизм ведения истории для возврата к прежним решениям.
+	</p>
+	<h2>Родственные паттерны</h2>
+	<p>
+		<b>К</b>оманда: команды помещают информацию о состоянии, необходимую для отмены выполненных действий, в хранители.
+	</p>
+	<p>
+		<b>И</b>тератор: хранители можно использовать для итераций, как было показано выше.
+	</p>
+	<div class="up">
+		<a href="#col-100">go up</a>
+	</div>
+	<footer>
+		Copyright &copy; 2016 | Design: <span>EL_PASO</span>
+	</footer>
+</body>
+</html>

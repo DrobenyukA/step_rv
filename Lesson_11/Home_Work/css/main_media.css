@@ -1,0 +1,400 @@
+body {
+	min-width: 320px;
+}
+.device{
+	position: absolute;
+	top: 50px;
+	left: 5px;
+	width: 34px;
+	height: 64px;
+	background-image: url('../img/phone.png');
+	background-repeat: no-repeat;
+	-webkit-background-size: cover;
+	background-size: cover;
+	opacity: 0.5;
+}
+
+header{
+	overflow: hidden;
+}
+
+header .top {
+	text-align: center;
+	width: 100%;
+	background: #FFFFFF;
+}
+
+header .top .autors {
+	margin: 0 auto;
+	width: 100%;
+	padding: 0 3px 10px 3px;
+}
+
+header .top .autors ul {
+	margin:0;
+}
+
+header .top .autors li{
+	display: inline-block;
+	padding: 0;
+	text-align: center;
+	color: #000;
+	font-size: 16px;
+}
+
+header .main .title {
+	padding: 30px 3px;
+	text-align: center;
+	background: #CCA876;
+	color:#fff;
+}
+
+header .main .title_desc {
+	width: 90%;
+	margin: 0 auto;
+	padding: 30px 0px;
+	text-align: center;
+	font-size: 22px;
+	color: #794700;
+	border-bottom: 1px solid #9B7B4D;
+}
+
+header .main .themes {
+	width: 80%;
+	font-size: 18px;
+	margin: 10px auto;
+}
+
+header .main .themes ul {
+
+}
+
+header .main .themes li {
+	padding: 5px 0;
+	text-align: left;
+	margin-left: 20px;
+	list-style-type: square;
+	color:#2c2c2c;
+}
+
+.sep {
+	margin-top: 30px;
+	position: relative;
+	display: block;
+	clear: both;
+	margin: 30px 0 30px 0;
+	min-width: 100%;
+	height: 1px;
+	border-top: 1px solid #EDEDED;
+}
+.sep:after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 1px;
+	width: 100px;
+	height: 1px;
+	background: #CCA876;
+	margin-left: -50px;
+}
+
+.photorow {
+	width:100%;
+	display:table;
+	position:relative;
+	margin:30px auto 0 auto;
+	clear: both;
+}
+
+.photo {
+	max-width: 300px;
+	margin: 0px auto 10px auto;
+	padding:5px;
+	border-bottom: 1px solid #ccc;
+}
+
+.photo img {
+	width: 100%;
+	height: auto;
+	opacity:0.8;
+}
+
+.photo img:hover {
+	opacity:1;
+}
+
+.photo h4 {
+	margin-bottom: 10px;
+}
+
+.patterns h2{
+	background-color: #CCA876;
+	padding: 10px 0;
+	margin-top: 15px;
+	color: #fff;
+}
+
+.patterns .block {
+	width: 250px;
+	height: 250px;
+	text-align: center; 
+	max-width: 250px;
+	margin: 0 auto;
+	padding: 5px;
+	border: 1px solid #fff;
+}
+
+.patterns .block:hover {
+	transition: all 0.3s;
+}
+
+.patterns .block p {
+	padding: 0 5%;
+	color: #fff;
+	font-size: 18px;
+}
+
+.patterns .block h4{
+	color:#fff;
+	font-size: 32px;
+	padding: 20%;
+}
+
+.dark {
+	background:#4A4F55;
+}
+
+.light {
+	background:#CCA876;
+}
+
+.patterns_row {
+	width: 100%;
+	display: table;
+	position: relative;
+	clear: both;
+}
+
+.row {
+	background:#fff;
+}
+
+footer {
+	background: #404449;
+	height:60px;
+	font-size: 16px;
+	position: relative;
+}
+footer p{
+	color:#fff;
+	padding: 20px;
+	text-align: center;
+}
+
+.up{
+	position: fixed;
+	bottom: 10px;
+	right: 10px;
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	background-color: rgba(79, 65, 45, 0.8);
+	border: 1px solid #fff;
+	border-radius: 50%;
+	text-align: center;
+	-webkit-animation: animated 5s 1;
+	animation: animated 5s 1;
+}
+
+.up:hover{
+	background-color: rgba(79, 65, 45, 1);
+	-webkit-box-shadow: 0 0 3px #fff;
+	box-shadow: 0 0 3px #fff;
+}
+
+@-webkit-keyframes animated {
+	from {bottom: -50px; right: -50px; background-color: rgba(79, 65, 45, 0.1);}
+	to {bottom: 10px; right: 10px; background-color: rgba(79, 65, 45, 0.8);}
+}
+
+@keyframes animated {
+	from {bottom: -50px; right: -50px; background-color: rgba(79, 65, 45, 0.1);}
+	to {bottom: 10px; right: 10px; background-color: rgba(79, 65, 45, 0.8);}
+}
+
+.up a{
+	display: block;
+	height: 50px;
+	padding-top: 16px;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (min-width : 480px) {
+	.photo {
+		display: inline-block;
+		max-width: 45%;
+	}
+
+	.patterns .block {
+		max-width: 360px;
+		width: 360px;
+	}
+	.patterns .block h4 {
+		font-size: 36px;
+		padding: 10% 20%;
+	}
+
+	.patterns h2 {
+		background-color: #FFFFFF;
+		color: #2c2c2c;
+	}
+}
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+	.device{
+		top: 72px;
+		height: 42px;
+		width: 64px;
+		border-radius: 5px;
+		background-color: transparent;
+		background-image: url('../img/tablet.jpg');
+	}
+
+	.photo {
+		display: inline-block;
+		max-width: 22%;
+	}
+
+	.photo h4 {
+		font-size: 16px; 
+	}
+
+	.photo-center {
+		width: 75%;
+		margin:0 auto;
+	}
+
+	.patterns .block {
+		max-width: 500px;
+		width: 500px;
+	}
+
+	.patterns .block h4 {
+		font-size: 36px;
+		padding: 10%;
+	}
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+	.photo h4 {
+		font-size: 22px;
+	}
+
+	.patterns .block:hover {
+		background:#2F2F2F;
+		transition: all .5s;
+	}
+
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 1024px) {
+	.patterns .block {
+		max-width: 25%;
+		width: 25%;
+		display: inline-block;
+		border: none;
+	}
+
+	.patterns_row {
+		max-width: 1000px;
+	}
+
+	.photorow {
+		display:table;
+		position:relative;
+		margin:30px auto 0 auto;
+		clear: both;	
+	}
+
+	.photo-center{
+		display: table-row;
+	}
+
+	.photo {
+		display: table-cell;
+		padding: 2%;
+		max-width: 25%;
+	}
+
+	.patterns .block {
+		float: left;
+	}
+
+	.patterns .block {
+		border:none;
+		max-width: 23%;
+	}
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1280px) {
+	header{
+		margin-top: -45px;
+	}
+
+	header:hover{
+		margin-top: 0;
+		-webkit-transition: all 1s;
+		-o-transition: all 1s;
+		transition: all 1s;
+	}
+
+	.device{
+		top: 16px;
+		height: 64px;
+		width: 68px;
+		background-color: transparent;
+		background-image: url('../img/desktop.png');
+	}
+
+	.row {
+		background:#4A4F55;
+	}
+
+	.patterns_row {
+		max-width: 1024px;
+	}
+
+}
+
+@media only screen and (min-width : 1600px) {
+	.up{
+		width: 5vw;
+		height: 5vw;
+	}
+
+	.up a{
+		height: 5vw;
+		vertical-align: middle;
+		padding: 0;
+		line-height: 5vw;
+		font-size: 0.8em;
+	}
+}
+
+@media only screen and (min-width : 1920px) {
+	.device{
+		height: 60px;
+		width: 96px;
+		border-radius: 0;
+		background-color: transparent;
+		background-image: url('../img/tv.png');
+	}
+
+}

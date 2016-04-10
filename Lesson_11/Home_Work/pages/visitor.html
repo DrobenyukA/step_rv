@@ -1,0 +1,515 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>	
+	<meta name=viewport content="width=device-width, initial-scale=1">
+	<title>Visitor  - pattern</title>
+	<link rel="stylesheet" href="../css/reset.css"/>
+	<link rel="stylesheet" href="../css/anatoliy_page_style.css"/>
+</head>
+<body>
+    <header>
+        <div class="text">
+            <h4>Design Patterns</h4>
+        </div>
+        <h2>паттерн strategy</h2>
+        <div class="button">
+            <a href="../index.html">
+                <h4>home</h4>
+            </a>
+        </div>
+    </header>
+    <main>
+        <div class="arrow">
+        <a href="#top" title="go on top"></a>
+        </div>
+    	<h2>Название и классификация паттерна</h2>
+    	<p>
+    	    <b>П</b>осетитель - паттерн поведения объектов.
+    	</p>
+    	<h2>Назначение</h2>
+    	<p>
+    	    <b>О</b>писывает операцию, выполняемую с каждым объектом из некоторой структуры. Паттерн посетитель позволяет определить новую операцию, не изменяя классы этих объектов.
+    	</p>
+    	<h2>Мотивация</h2>
+    	<p>
+    	    <b>Р</b>ассмотрим компилятор, который представляет программу в виде абстрактного синтаксического дерева. Над такими деревьями он должен выполнять операции «статического семантического» анализа, например проверять, что все переменные определены. Еще ему нужно генерировать код. Аналогично можно было бы определить операции контроля типов, оптимизации кода, анализа потока выполнения, проверки того, что каждой переменной было присвоено конкретное значение перед первым использованием, и т.д. Более того, абстрактные синтаксические деревья могли бы служить для красивой печати программы, реструктурирования кода и вычисления различных метрик программы.
+    	</p>
+    	<p>
+    	    <b>В</b> большинстве таких операций узлы дерева, представляющие операторы присваивания, следует рассматривать иначе, чем узлы, представляющие переменные и арифметические выражения. Поэтому один класс будет создан для операторов
+    	    присваивания, другой - для доступа к переменным, третий - для арифметических выражений и т.д. Набор классов узлов, конечно, зависит от компилируемого языка, но не очень сильно.
+    	</p>
+        <img src="../img/pages/11/pg_11_1.png" height="228" width="333" alt="scheme">
+        <p>
+            <b>Н</b>а представленной диаграмме показана часть иерархии классов <b>Node</b>. Проблема здесь в том, что если раскидать все операции по классам различных узлов, то получится система, которую трудно понять, сопровождать и изменять. Вряд ли кто-нибудь разберется в программе, если код, отвечающий за проверку типов, будет перемешан с кодом, реализующим красивую печать или анализ потока выполнения. Кроме того, добавление любой новой операции потребует перекомпиляции всех классов. Оптимальный вариант - наличие возможности добавлять операции по отдельности и отсутствие зависимости классов узлов от применяемых к ним операций.
+        </p>
+        <p>
+            <b>И</b> того, и другого можно добиться, если поместить взаимосвязанные операции из каждого класса в отдельный объект, называемый <em>посетителем</em>, и передавать его элементам абстрактного синтаксического дерева по мере обхода. «Принимая» посетителя, элемент посылает ему запрос, в котором содержится, в частности, класс элемента. Кроме того, в запросе присутствует в виде аргумента и сам элемент. Посетителю в данной ситуации предстоит выполнить операцию над элементом, ту самую, которая наверняка находилась бы в классе элемента.
+        </p>
+        <p>
+            <b>Н</b>апример, компилятор, который не использует посетителей, мог бы проверить тип процедуры, вызвав операцию <b>TypeCheck</b> для представляющего ее абстрактного синтаксического дерева. Каждый узел дерева должен был реализовать операцию <b>TypeCheck</b> путем рекурсивного вызова ее же для своих компонентов (см. приведенную выше диаграмму классов). Если же компилятор проверяет тип процедуры посредством посетителей, то ему достаточно создать объект класса <b>TypeCheckingVisitor</b> и вызвать для дерева операцию Accept, передав ей этот объект в качестве аргумента. Каждый узел должен был реализовать Accept путем обращения к посетителю: узел, соответствующий оператору присваивания, вызывает операцию посетителя <b>Visit Assignment</b>, а узел, ссылающийся на переменную, - операцию <b>VisitVariableReference</b>. To, что раньше было операцией <b>TypeCheck</b> в классе <b>AssignmentNode</b>, стало операцией <b>VisitAssignment</b> в классе <b>TypeCheckingVisitor</b>. ;
+        </p>
+        <p>
+            <b>Ч</b>тобы посетители могли заниматься не только проверкой типов, нам необходим абстрактный класс <b>Nodevisitor</b>, являющийся родителем для всех посетителей синтаксического дерева. Приложение, которому нужно вычислять метрики программы, определило бы новые подклассы Nodevisitor, так что нам не пришлось бы добавлять зависящий от приложения код в классы узлов. Паттерн посетитель инкапсулирует операции, выполняемые на каждой фазе компиляции, в классе <b>Visitor</b>, ассоциированном с этой фазой.
+        </p>
+        <img src="../img/pages/11/pg_11_2.png" height="467" width="460" alt="scheme">
+        <p>
+            <b>П</b>рименяя паттерн посетитель, вы определяете две иерархии классов: одну для элементов, над которыми выполняется операция (иерархия <b>Node</b>), а другую - для посетителей, описывающих те операции, которые выполняются над элементами (иерархия <b>NodeVisitor</b>). Новая операция создается путем добавления подкласса в иерархию классов посетителей. До тех пор пока грамматика языка остается постоянной (то есть не добавляются новые подклассы <b>Node</b>), новую функциональность можно получить путем определения новых подклассов <b>NodeVisitor</b>.
+        </p>
+        <h2>Применимость</h2>
+        <p>
+            <b>И</b>спользуйте паттерн посетитель, когда:
+        </p>
+        <ul>
+            <li>
+            в структуре присутствуют объекты многих классов с различными интерфейсами и вы хотите выполнять над ними операции, зависящие от конкретных классов;
+            </li>
+            <li>
+            над объектами, входящими в состав структуры, надо выполнять разнообразные, не связанные между собой операции и вы не хотите «засорять» классы такими операциями. Посетитель позволяет объединить родственные операции, поместив их в один класс. Если структура объектов является общей для нескольких приложений, то паттерн посетитель позволит в каждое приложение включить только относящиеся к нему операции;
+            </li>
+            <li>
+            классы, устанавливающие структуру объектов, изменяются редко, но новые операции над этой структурой добавляются часто. При изменении классов, представленных в структуре, нужно будет переопределить интерфейсы всех посетителей, а это может вызвать затруднения. Поэтому если классы меняются достаточно часто, то, вероятно, лучше определить операции прямо в них.
+            </li>
+        </ul>
+        <h2>Структура</h2>
+        <img src="../img/pages/11/pg_11_3.png" height="405" width="566" alt="structure">
+        <h2>Участники</h2>
+        <ul>
+            <li>
+            <b>Visitor (NodeVisitor)</b> - посетитель:
+            </li>
+        </ul>
+        <ul class="line">
+            <li>
+            объявляет операцию V i s i t для каждого класса ConcreteElement в структуре объектов. Имя и сигнатура этой операции идентифицируют класс, который посылает посетителю запрос Visit. Это позволяет посетителю определить, элемент какого конкретного класса он посещает. Владея такой информацией, посетитель может обращаться к элементу напрямую через его интерфейс;
+            </li>
+        </ul>
+        <ul>
+            <li>
+            <b>Concrete Visitor (TypeCheckingVisitor)</b> - конкретный посетитель:
+            </li>
+        </ul>
+        <ul class="line">
+            <li>
+            реализует все операции, объявленные в классе Visitor. Каждая операция реализует фрагмент алгоритма, определенного для класса соответствующего объекта в структуре. Класс ConcreteVisitor предоставляет контекст дляэтого алгоритма и сохраняет его локальное состояние. Часто в этом состоянии аккумулируются результаты, полученные в процессе обхода структуры;
+            </li>
+        </ul>
+        <ul>
+            <li>
+            <b>Element (Node)</b> - элемент:
+            </li>
+        </ul>
+        <ul class="line">
+            <li>
+            определяет операцию Accept, которая принимает посетителя в качестве аргумента;
+            </li>
+        </ul>
+        <ul>
+            <li>
+            <b>ConcreteElement</b> (AssignmentNode, VariableRefNode) - конкретный элемент:
+            </li>
+        </ul>
+        <ul class="line">
+            <li>
+            реализует операцию Accept, принимающую посетителя как аргумент;
+            </li>
+        </ul>
+        <ul>
+            <li>
+            <b>ObjectStructure</b> (Program) - структура объектов:
+            </li>
+        </ul>
+        <ul class="line">
+            <li>
+            может перечислить свои элементы;
+            </li>
+        </ul>
+        <ul class="line">
+            <li>
+            может предоставить посетителю высокоуровневый интерфейс для посещения своих элементов;
+            </li>
+        </ul>
+        <ul class="line">
+            <li>
+            может быть как составным объектом (см. паттерн компоновщик), так и коллекцией, например списком или множеством.
+            </li>
+        </ul>
+        <h2>Отношения</h2>
+        <ul>
+            <li>клиент, использующий паттерн посетитель, должен создать объект класса ConcreteVisitor, азатем обойти всю структуру, посетив каждый ее элемент.
+            </li>
+            <li>а при посещении элемента последний вызывает операцию посетителя, соответствующую своему классу. Элемент передает этой операции себя в качестве аргумента, чтобы посетитель мог при необходимости получить доступ к его состоянию.
+            </li>
+        </ul>
+        <p>
+            <b>Н</b>а представленной диаграмме взаимодействий показаны отношения между объектом, структурой, посетителем и двумя элементами.
+        </p>
+        <img src="../img/pages/11/pg_11_4.png" height="275" width="571" alt="diagramme">
+        <h2>Результаты</h2>
+        <p>
+            <b>Н</b>екоторые достоинства и недостатки паттерна посетитель:
+        </p>
+        <Ul>
+            <li>
+            упрощает добавление новых операций. С помощью посетителей легко добавлять операции, зависящие от компонентов сложных объектов. Для определения новой операции над структурой объектов достаточно просто ввести нового посетителя. Напротив, если функциональность распределена по нескольким классам, то для определения новой операции придется изменить каждый класс;
+            </li>    
+            <li>
+            <em>объединяет родственные операции и отсекает те, которые не имеют к ним отношения</em>. Родственное поведение не разносится по всем классам, присутствующим в структуре объектов, оно локализовано в посетителе. Не связанные друг с другом функции распределяются по отдельным подклассам класса Visitor. Это способствует упрощению как классов,  пределяющих элементы, так и алгоритмов, инкапсулированных в посетителях. Все относящиеся к алгоритму структуры данных можно скрыть в посетителе;
+            </li>
+            <li>
+            <em> а добавление новых классов ConcreteElement затруднено</em>. Паттерн посетитель усложняет добавление новых подклассов класса Element. Каждый новый конкретный элемент требует объявления новой абстрактной операции в классе Visitor, которую нужно реализовать в каждом из существующих классов ConcreteVis itor. Иногда большинство конкретных посетителей могут унаследовать операцию по умолчанию, предоставляемую классом Visitor,что скорее исключение, чем правило.<br>                               
+            Поэтому при решении вопроса о том, стоит ли использовать паттерн посетитель, нужно прежде всего посмотреть, что будет изменяться чаще: алгоритм, применяемый к объектам структуры, или классы объектов, составляющих эту структуру. Вполне вероятно, что сопровождать иерархию классов Visitor будет нелегко, если новые классы ConcreteElement добавляются часто. В таких случаях проще определить операции прямо в классах, представленных в структуре. Если же иерархия классов Element стабильна, но постоянно расширяется набор операций или модифицируются алгоритмы, то паттерн посетитель поможет лучше управлять такими изменениями;
+            </li>
+            <li>
+            <em>посещение различных иерархий классов</em>. Итератор (см. описание паттерна итератор) может посещать объекты структуры по мере ее обхода, вызывая операции объектов. Но итератор не способен работать со структурами, состоящими из объектов разных типов. Так, интерфейс класса Iterator, рассмотренный на стр. 255, может всего лишь получить доступ к объектам типа Item:
+            </li>
+        </Ul>
+        <pre>
+        template &lt;<span class="cl_bl">class</span> <span class="cl_nm_gr">Item</span>&gt;
+        <span class="cl_bl">class</span> Iterator {
+            <span class="cl_com">// ...</span>
+            Item CurrentltemO const;
+        };
+        </pre>
+        <p>
+            <b>О</b>тсюда следует, что все элементы, которые итератор может посетить, должны иметь общий родительский класс Item.
+        </p>
+        <p>
+            <b>У</b> посетителя таких ограничений нет. Ему разрешено посещать объекты, не имеющие общего родительского класса. В интерфейс класса Visitor можно добавить операции для объектов любого типа. Например, в следующем объявлении
+        </p>
+        <pre>
+            <span class="cl_bl">class</span> <span class="cl_nm_gr">Visitor</span> {
+        public:
+        <span class="cl_com">// ...</span>
+            <span class="cl_bl">void</span><span class="cl_nm_gr"> VisitMyType</span>(MyType<span class="cl_symb">*</span>);
+            <span class="cl_bl">void</span><span class="cl_nm_gr"> VisitYourType</span>(YourType<span class="cl_symb">*</span>);
+            };
+        </pre>
+        <p>
+            классы МуТуре и YourType необязательно должны быть связаны отношением наследования;
+        </p>
+        <ul>
+            <li>
+            <em>аккумулирование состояния</em>. Посетители могут аккумулировать информацию о состоянии при посещении объектов структуры. Если не использовать этот паттерн, состояние придется передавать в виде дополнительных аргументов операций, выполняющих обход, или хранить в глобальных переменных;
+            </li>
+            <li>
+            <em>нарушение инкапсуляции</em>. Применение посетителей подразумевает, что у класса ConcreteElement достаточно развитый интерфейс для того, чтобы посетители могли справиться со своей работой. Поэтому при использовании данного паттерна приходится предоставлять открытые операции для доступа к внутреннему состоянию элементов, что ставит под угрозу инкапсуляцию.
+            </li>
+        </ul>
+        <h2>Реализация</h2>
+        <p>
+            <b>С</b> каждым объектом структуры ассоциирован некий класс посетителя Visitor. В этом абстрактном классе объявлены операции VisitConcreteElement для каждого конкретного класса ConcreteElement элементов, представленных в структуре. В каждой операции типа Visit аргумент объявлен как принадлежащий одному из классов ConcreteElement, так что посетитель может напрямую обращаться к интерфейсу этого класса. Классы ConcreteVisitor замещают операции Visit с целью реализации поведения посетителя для соответствующего класса ConcreteElement.
+        </p>
+        <p>
+            <b>В</b> C++ класс Visitor следовало бы объявить приблизительно так:
+        </p>
+        <pre>
+        <span class="cl_bl">class</span><span class="cl_nm_gr"> Visitor</span> {
+        public:
+            <span class="cl_bl">virtual void</span> <span class="cl_nm_gr">VisitElementA</span>(ElementA<span class="cl_symb">*</span>);
+            <span class="cl_bl">virtual void</span> <span class="cl_nm_gr">VisitElementB</span>(Elements<span class="cl_symb">*</span>);
+            <span class="cl_com">// и так далее для остальных конкретных элементов</span>
+        protected:
+            Visitor!) ;
+        };
+        </pre>
+        <p>
+            <b>К</b>аждый класс ConcreteElement реализует операцию Accept, которая вызывает соответствующую операцию Visit. . . посетителя для этого класса. Следовательно, вызываемая в конечном итоге операция зависит как от класса элемента, так и от класса посетителя.<span class="cl_symb">*</span>
+        </p>
+        <p>
+            <span class="cl_symb">*</span>
+            <em>Можно было бы использовать перегрузку функций, чтобы дать этим операциям одно и то же простое имя, например Visit, так как они уже различаются типом передаваемого параметра. Имеются
+            аргументы как за, так и против подобной перегрузки. С одной стороны, подчеркивается, что все операции выполняют однотипный анализ, хотя и с разными аргументами. С другой стороны, при этом читателю программы может быть не вполне понятно, что происходит при вызове. В общем все зависит от того, часто ли вы применяете перегрузку функций.</em>
+        </p>
+        <p>
+            <b>К</b>онкретные элементы объявляются так:
+        </p>
+        <pre>
+            <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Element</span> {
+            <span style="color: #997700; font-weight: bold">public:</span>
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333333">~</span>Element();
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> Accept(Visitors) <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+            <span style="color: #997700; font-weight: bold">protected:</span>
+                Element();
+            };
+
+            <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">ElementA</span> <span style="color: #333333">:</span> <span style="color: #008800; font-weight: bold">public</span> Element {
+            <span style="color: #997700; font-weight: bold">public:</span>
+                ElementA();
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">Accept</span>(Visitors v) { v.VisitElementA(<span style="color: #008800; font-weight: bold">this</span>); }
+            };
+            <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">ElementB</span> <span style="color: #333333">:</span> <span style="color: #008800; font-weight: bold">public</span> Element {
+            <span style="color: #997700; font-weight: bold">public:</span>
+                ElementB();
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">Accept</span>(Visitors v) { v.VisitElementB(<span style="color: #008800; font-weight: bold">this</span>); }
+            };
+        </pre>
+        <p>
+            <b>К</b>ласс CompositeElement мог бы реализовать операцию Accept следующим образом:
+        </p>
+        <pre>
+            <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">CompositeElement</span> <span style="color: #333333">:</span> <span style="color: #008800; font-weight: bold">public</span> Element {
+            <span style="color: #997700; font-weight: bold">public:</span>
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> Accept(Visitors);
+            <span style="color: #997700; font-weight: bold">private:</span>
+                List<span style="color: #333333">&amp;</span>lt;Element<span style="color: #333333">*&amp;</span>gt;<span style="color: #333333">*</span> _children;
+            };
+
+            <span style="color: #333399; font-weight: bold">void</span> CompositeElement<span style="color: #333333">::</span>Accept (Visitors v) {
+                ListIterator<span style="color: #333333">&amp;</span>lt;Element<span style="color: #333333">*&amp;</span>gt; i(_children);
+                <span style="color: #008800; font-weight: bold">for</span> (i.First (); <span style="color: #333333">!</span>i.IsDone() ; i.NextO) {
+                   i .Currentltem( ).<span style="color: #333333">-&gt;</span>Accept (v) ;
+                }
+                v.VisitCompositeElement(<span style="color: #008800; font-weight: bold">this</span>);
+            }
+        </pre>
+        <p>
+            <b>П</b>ри решении вопроса о применении паттерна посетитель часто возникают два спорных момента:
+        </p>
+        <ul>
+            <li>
+            <em>двойная диспетчеризация</em>. По своей сути паттерн посетитель позволяет, не изменяя классы, добавлять в них новые операции. Достигает он этого с помощью приема, называемого двойной диспетчеризацией. Данная техника хорошо известна. Некоторые языки программирования (например, CLOS) поддерживают ее явно. Языки же вроде C++ и Smalltalk  поддерживают только <em>одинарную диспетчеризацию</em>.
+            <br>
+            Для определения того, какая операция будет выполнять запрос, в языках с одинарной диспетчеризацией неоходимы имя запроса и тип получателя. Например, то, какая операция будет вызвана для обработки запроса GenerateCode, зависит от типа объекта в узле, которому адресован запрос. В C++ вызов GenerateCode для экземпляра VariableRef Node приводит к вызову функции VariableRefNode: :GenerateCode (генерирующей код обращения к переменной). Вызов же GenerateCode для узла класса AssignmentNode приводит к вызову функции AssignmentNode: : GenerateCode (генерирующей код для оператора присваивания). Таким образом, выполняемая операция определяется одновременно видом запроса и типом получателя.
+            <br>
+            Понятие «двойная диспетчеризация» означает, что выполняемая операция зависит от вида запроса и типов двух получателей. Accept - это операция с двойной диспетчеризацией. Ее семантика зависит от типов двух объектов: Visitor и Element. Двойная диспетчеризация позволяет посетителю запрашивать разные операции для каждого класса элемента.<span class="cl_symb">*</span>
+            <br>
+            <span class="cl_symb">*</span><em>Если есть двойная диспетчеризация, то почему бы не быть тройной, четверной или диспетчеризации произвольной кратности? Двойная диспетчеризация - это просто частный случай множественной диспетчеризации, при которой выбираемая операция зависит от любого числа типов. (CLOS как раз и поддерживает множественную диспетчеризацию.) В языках с поддержкой двойной или множественной диспетчеризации необходимость в паттерне посетитель возникает гораздо реже.
+            Поэтому возникает необходимость в паттерне посетитель: выполняемая операция зависит и от типа посетителя, и от типа посещаемого элемента. Вместо статической привязки операций к интерфейсу класса Element мы можем консолидировать эти операции в классе Visitor и использовать Accept для привязки их во время выполнения. Расширение интерфейса класса Element сводится к определению нового подкласса Visitor, а не к модификации многих подклассов Element;</em>
+            </li>
+            <li>
+            какой участник несет ответственность за обход структуры. Посетитель должен обойти каждый элемент структуры объектов. Вопрос в том, как туда попасть. Ответственность за обход можно возложить на саму структуру объектов, на посетителя или на отдельный объект-итератор (см. паттерн итератор). Чаще всего структура объектов отвечает за обход. Коллекция просто обходит все свои элементы, вызывая для каждого операцию Accept. Составной объект обычно обходит самого себя, «заставляя» операцию Accept посетить потомков текущего элемента и рекурсивно вызвать Accept для каждого из них. 
+            <br>
+            Другое решение - воспользоваться итератором для посещения элементов. В C++ можно применить внутренний или внешний итератор, в зависимости от того, что доступно и более эффективно. В Smalltalk обычно работают с внутренним итератором на основе метода do: и блока. Поскольку внутренние итераторы реализуются самой структурой объектов, то работа с ними во многом напоминает предыдущее решение, когда за обход отвечает структура. Основное различие заключается в том, что внутренний итератор не приводит к двойной диспетчеризации: он вызывает операцию посетителя с элементом в качестве аргумента, а не операцию элемента с посетителем в качестве аргумента. Однако использовать паттерн посетитель с внутренним итератором легко в том случае, когда операция посетителя вызывает операцию элемента без рекурсии.
+            <br>
+            Можно даже поместить алгоритм обхода в посетитель, хотя закончится это дублированием кода обхода в каждом классе ConcreteVisitor для каждого агрегата ConcreteElement. Основная причина такого решения - необходимость реализовать особо сложную стратегию обхода, зависящую от результатов операций над объектами структуры. Этот случай рассматривается в разделе «Пример кода».
+            </li>
+        </ul>
+        <h2>Пример кода</h2>
+        <p>
+            <b>П</b>оскольку посетители обычно ассоциируются с составными объектами, то для иллюстрации паттерна посетитель мы воспользуемся классами Equipment, определенными в разделе «Пример кода» из описания паттерна компоновщик. Для определения операций, создающих инвентарную опись материалов и вычисляющих полную стоимость агрегата, нам понадобится паттерн посетитель. Классы Equipment настолько просты, что применять паттерн посетитель в общем-то излишне, но на этом примере демонстрируются основные особенности его реализации.
+        </p>
+        <p>
+            <b>П</b>риведем еще раз объявление класса Equipment из описания паттерна компоновщик. Мы добавили операцию Accept, чтобы можно было работать с посетителем:
+        </p>
+        <pre> 
+            <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Equipment</span> {
+            <span style="color: #997700; font-weight: bold">public:</span> 
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333333">-</span>Equipment() ; 
+
+                <span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">char</span><span style="color: #333333">*</span> <span style="color: #0066BB; font-weight: bold">Name</span>() { <span style="color: #008800; font-weight: bold">return</span> _name; }
+
+                <span style="color: #008800; font-weight: bold">virtual</span> Watt <span style="color: #0066BB; font-weight: bold">Power</span>();
+                <span style="color: #008800; font-weight: bold">virtual</span> Currency <span style="color: #0066BB; font-weight: bold">NetPrice</span>();
+                <span style="color: #008800; font-weight: bold">virtual</span> Currency <span style="color: #0066BB; font-weight: bold">DiscountPrice</span>();
+
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">Accept</span>(EquipmentVisitors);
+            <span style="color: #997700; font-weight: bold">protected:</span>
+                Equipment(<span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">char</span><span style="color: #333333">*</span>)
+            <span style="color: #997700; font-weight: bold">private:</span>
+                <span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">char</span><span style="color: #333333">*</span> _name;
+            };
+        </pre>
+        <p>
+            <b>О</b>перации класса Equipment возвращают такие атрибуты единицы оборудования, как энергопотребление и стоимость. В подклассах эти операции переопределены в соответствии с конкретными типами оборудования (рама, дисководы и электронные платы).
+        </p>
+        <p>
+            <b>В</b> абстрактном классе всех посетителей оборудования имеются виртуальные функции для каждого подкласса (см. ниже). По умолчанию эти функции ничего не делают:
+        </p>
+        <pre>
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333333">-</span>EquipmentVisitor();
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> VisitFloppyDiskfFloppyDisk<span style="color: #333333">*</span>);
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitCard</span>(Card<span style="color: #333333">*</span>);
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitChassis</span>(Chassis<span style="color: #333333">*</span>);
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitBus</span>(Bus<span style="color: #333333">*</span>);
+                <span style="color: #888888">// и так далее для всех конкретных подклассов Equipment</span>
+            <span style="color: #997700; font-weight: bold">protected:</span>
+                EquipmentVisitor();
+            }
+        </pre>
+        <p>
+            <b>В</b>се подклассы класса Equipment определяют функцию Accept практически одинаково. Она вызывает операцию EquipmentVisitor, соответствующую тому классу, который получил запрос Accept:
+        </p>
+        <pre>
+            <span style="color: #333399; font-weight: bold">void</span> FloppyDisk<span style="color: #333333">::</span>Accept (EquipmentVisitor<span style="color: #333333">&amp;</span> visitor) {
+                visitor.VisitFloppyDisk(<span style="color: #008800; font-weight: bold">this</span>);
+            }
+        </pre>
+        <p>
+            <b>В</b>иды оборудования, которые содержат другое оборудование (в частности, подклассы CompositeEquipment в терминологии паттерна компоновщик), реализуют Accept путем обхода своих потомков и вызова Accept для каждого из них. Затем, как обычно, вызывается операция Visit. Например, Chassis: :Accept могла бы обойти все расположенные на шасси компоненты следующим образом:
+        </p>
+        <pre>
+            <span style="color: #333399; font-weight: bold">void</span> Chassis<span style="color: #333333">::</span>Accept (EquipmentVisitor<span style="color: #333333">&amp;</span>amp; visitor) {
+                <span style="color: #008800; font-weight: bold">for</span> (
+                    ListIterator<span style="color: #333333">&amp;</span>lt;Equipment<span style="color: #333333">*&amp;</span>gt; i(_parts);
+                    <span style="color: #333333">!</span>i.IsDone();
+                    i.Next()
+                ) {
+                    i.Currentltemf)<span style="color: #333333">-&gt;</span>Accept(visitor);
+                }
+                visitor.VisitChassis(<span style="color: #008800; font-weight: bold">this</span>);
+            }
+        </pre>
+        <p>
+            <b>П</b>одклассы EquipmentVisitor определяют конкретные алгоритмы, применяемые к структуре оборудования. Так, PricingVisitor вычисляет стоимость всей конструкции, для чего суммирует нетто-цены простых компонентов (например, гибкие диски) и цену со скидкой составных компонентов (например, рамы и шины):
+        </p>
+        <pre>
+            <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">PricingVisitor</span> <span style="color: #333333">:</span> <span style="color: #008800; font-weight: bold">public</span> EquipmentVisitor {
+            <span style="color: #997700; font-weight: bold">public:</span>
+                PricingVisitor();
+
+                Currency<span style="color: #333333">&amp;</span>amp; GetTotalPriceO;
+
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitFloppyDisk</span>(FloppyDisk<span style="color: #333333">*</span>);
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitCard</span>(Card<span style="color: #333333">*</span>);
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitChassis</span>(Chassis<span style="color: #333333">*</span>);
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitBus</span>(Bus<span style="color: #333333">*</span>);
+                <span style="color: #888888">// ...</span>
+            <span style="color: #997700; font-weight: bold">private:</span>
+                Currency _total;
+            };
+
+            <span style="color: #333399; font-weight: bold">void</span> PricingVisitor<span style="color: #333333">::</span>VisitFloppyDisk (FloppyDisk<span style="color: #333333">*</span> e) {
+                _total <span style="color: #333333">+</span> <span style="color: #333333">=</span> e<span style="color: #333333">-&gt;</span>NetPrice();
+            }
+            <span style="color: #333399; font-weight: bold">void</span> PricingVisitor<span style="color: #333333">::</span>VisitChassis (Chassis<span style="color: #333333">*</span> e) {
+                _total <span style="color: #333333">+=</span> e<span style="color: #333333">-&gt;</span>DiscountPrice();
+            }
+        </pre>
+        <p>
+            <b>Т</b>аким образом, посетитель PricingVisitor подсчитает полную стоимость всех узлов конструкции. Заметим, что PricingVisitor выбирает стратегию вычисления цены в зависимости от класса оборудования, для чего вызывает соответствующую функцию-член. Особенно важно то, что для оценки конструкции можно выбрать другую стратегию, просто поменяв класс PricingVisitor.
+        </p>
+        <p>
+            <b>О</b>пределить посетитель для составления инвентарной описи можно следующим образом:
+        </p>
+        <pre>
+            <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">InventoryVisitor</span> <span style="color: #333333">:</span> <span style="color: #008800; font-weight: bold">public</span> EquipmentVisitor {
+            <span style="color: #997700; font-weight: bold">public:</span>
+                InventoryVisitor();
+
+                InventoryS <span style="color: #0066BB; font-weight: bold">Getlnventory</span>();
+
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitFloppyDisk</span>(FloppyDisk<span style="color: #333333">*</span>);
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitCard</span>(Card<span style="color: #333333">*</span>);
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitChassis</span>(Chassis<span style="color: #333333">*</span>);
+                <span style="color: #008800; font-weight: bold">virtual</span> <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">VisitBus</span>(Bus<span style="color: #333333">*</span>);
+                <span style="color: #888888">// ...</span>
+
+            <span style="color: #997700; font-weight: bold">private:</span>
+                Inventory _inventory;
+            }
+        </pre>
+        <p>
+            <b>П</b>осетитель InventoryVisitor подсчитывает итоговое количество каждого вида оборудования во всей конструкции. При этом используется класс Inventory, в котором определен интерфейс для добавления компонента (здесь мы его приводить не будем):
+        </p>
+        <pre>
+                <span style="color: #333399; font-weight: bold">void</span> InventoryVisitor<span style="color: #333333">::</span>VisitFloppyDisk (FloppyDisk<span style="color: #333333">*</span> e) {
+                    _inventory.Accumulate(e);
+                }
+
+                <span style="color: #333399; font-weight: bold">void</span> InventoryVisitor<span style="color: #333333">:</span> <span style="color: #333333">:</span>VisitChassis (Chassis<span style="color: #333333">*</span> e) {
+                    _inventory.Accumulate(e);
+                }
+        </pre>
+        <p>
+            <b>I</b>nventoryVisitor к структуре объектов можно применить следующим образом:
+        </p>
+        <pre>
+            Equipment<span style="color: #333333">*</span> component;
+            InventoryVisitor visitor;
+
+            component<span style="color: #333333">-&gt;</span>Accept(visitor);
+            cout &laquo; "Инвентарная опись"
+                 &laquo; component<span style="color: #333333">-&gt;</span>Name()
+                &laquo; visitor.Getlnventory();
+        </pre>
+        <p>
+            <b>Д</b>алее мы покажем, как на языке Smalltalk реализовать пример из описания паттерна интерпретатор с помощью паттерна посетитель. Как и в предыдущем случае, этот пример настолько мал, что паттерн посетитель практически бесполезен, но служит неплохой иллюстрацией основных принципов. Кроме того, демонстрируется ситуация, в которой обход выполняет посетитель.
+        </p>
+        <p>
+            <b>С</b>труктура объектов (регулярные выражения) представлена четырьмя классами, в каждом из которых существует метод accept:, принимающий посетитель в качестве аргумента. В классе SequenceExpression метод accept: выглядит так:
+        </p>
+        <pre>
+            <span style="color: #997700; font-weight: bold">accept:</span> aVisitor
+                <span style="color: #333333">^</span> aVisitor visitSequence<span style="color: #333333">:</span> self
+        </pre>
+        <p>
+            <b>М</b>етод accept: в классах RepeatExpression, AlternationExpression и LiteralExpression посылает сообщения visitRepeat:, visitAlternation: и visitLiteral: соответственно.
+        </p>
+        <p>
+            <b>В</b>се четыре класса должны иметь функции доступа, к которым может обратиться посетитель. Для SequenceExpression это expression!  ехргезз!оп2;для AlternationExpression- alternative! и alternative2; для класса RepeatExpression -repetition,а дляLiteralExpression -components.
+        </p>
+        <p>
+            <b>К</b>онкретным посетителем выступает класс REMatchingVisitor. Он отвечает за обход структуры, поскольку алгоритм обхода нерегулярен. В основном это происходит из-за того, что RepeatExpression посещает свой компонент многократно. В классе REMatchingVisitor есть переменная экземпляра inputstate. Его методы практически повторяют методы match: классов выражений из паттерна интерпретатор, только вместо аргумента inputstate подставляется узел, описывающий сравниваемое выражение. Однако они по-прежнему возвращают множество потоков, с которыми выражение должно сопоставиться, чтобы получить текущее состояние:
+        </p>
+        <pre>
+            <span style="color: #997700; font-weight: bold">visitSequence:</span> sequenceExp
+                inputstate <span style="color: #333333">:=</span> sequenceExp expressionl accept<span style="color: #333333">:</span> self.
+                <span style="color: #333333">^</span> sequenceExp expression2 accept<span style="color: #333333">:</span> self.
+
+            <span style="color: #997700; font-weight: bold">visitRepeat:</span> repeatExp
+                I finalState I
+                finalState <span style="color: #333333">:=</span> inputstate copy,
+                [inputstate isEmpty]
+
+                <span style="color: #997700; font-weight: bold">whileFalse:</span>
+                    [inputState <span style="color: #333333">:=</span> repeatExp repetition accept<span style="color: #333333">:</span> self.
+                    finalState addAll<span style="color: #333333">:</span> inputState].
+                <span style="color: #333333">^</span> finalState
+
+            <span style="color: #997700; font-weight: bold">VisitAlternation:</span> alternateExp
+                I finalState originalState I
+                originalState <span style="color: #333333">:=</span> inputState.
+                finalState <span style="color: #333333">:=</span> alternateExp alternativel accept<span style="color: #333333">:</span> self.
+                inputState <span style="color: #333333">:=</span> originalState.
+                finalState addAll<span style="color: #333333">:</span> (alternateExp alternative2 accept<span style="color: #333333">:</span> self).
+                <span style="color: #333333">^</span> finalState
+
+                <span style="color: #997700; font-weight: bold">visitLiteral:</span> literalExp
+                    I finalState tStream I
+                    finalState <span style="color: #333333">:=</span> Set <span style="color: #008800; font-weight: bold">new</span>.
+                    nputState
+                        <span style="color: #997700; font-weight: bold">do:</span>
+                            [<span style="color: #333333">:</span>stream I tStream <span style="color: #333333">:=</span> stream copy.
+                               (tStream nextAvailable<span style="color: #333333">:</span>
+                                   literalExp components size
+                               ) <span style="color: #333333">=</span> literalExp components
+                                   <span style="color: #997700; font-weight: bold">ifTrue:</span> [finalState add<span style="color: #333333">:</span> tStream]
+                            ].
+                    <span style="color: #333333">^</span> finalState
+        </pre>
+        <h2>Известные применения</h2>
+        <p>
+            <b>В</b> компиляторе Smalltalk-80 имеется класс посетителя, который называется ProgramNodeEnumerator. В основном он применяется в алгоритмах анализа исходного текста программы и не используется ни для генерации кода, ни для красивой печати, хотя мог бы.
+        </p>
+        <p>
+            <b>I</b>RIS Inventor [Str93] - это библиотека для разработки приложений трехмерной графики. Библиотека представляет собой трехмерную сцену в виде иерархии узлов, каждый из которых соответствует либо геометрическому объекту, либо его атрибуту. Для операций типа изображения сцены или обработки события ввода необходимо по-разному обходить эту иерархию. В Inventor для этого служат посетители, которые называются действиями (actions). Есть различные посетители для изображения, обработки событий, поиска, сохранения и определения ограничивающих прямоугольников.
+        </p>
+        <p>
+            <b>Ч</b>тобы упростить добавление новых узлов, в библиотеке Inventor реализована схема двойной диспетчеризации на C++. Для этого служит информация о типе, доступная во время выполнения, и двумерная таблица, строки которой представляют посетителей, а колонки - классы узлов. В каждой ячейке хранится указатель на функцию, связанную с парой посетитель-класс узла.
+        </p>
+        <p>
+            <b>М</b>арк Линтон (Mark Linton) ввел термин «посетитель» (Visitor) в спецификацию библиотеки для построения приложений X Consortium's Fresco Application Toolkit [LP93].
+        </p>
+        <h2>Родственные паттерны</h2>
+        <p>
+            <b>К</b>омпоновщик: посетители могут использоваться для выполнения операции над всеми объектами структуры, определенной с помощью паттерна компоновщик.
+        </p>
+        <p>
+            <b>И</b>нтерпретатор: посетитель может использоваться для выполнения интерпретации.
+        </p>
+    </main>
+    <footer>
+        <div class="footer">
+            <div id=el_paso>
+                Made by <b>el paso</b>
+            </div>
+            <div id="copy">
+                Rivne 2016
+            </div>
+        </div> 
+    </footer> 
+</body>
+</html>

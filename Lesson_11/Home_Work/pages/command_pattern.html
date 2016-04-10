@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<meta name=viewport content="width=device-width, initial-scale=1">	
+	<title>Command - pattern</title>
+	<link rel="stylesheet" href="../css/reset.css"/>
+	<link rel="stylesheet" href="../css/peter_page_style.css"/>
+</head>
+<body>
+	<main class="main-page"> 
+			<header> 
+				<h1><span>Паттерн</span> <b>Command</b></h1>
+			</header>
+			<section>
+				<div class="buttons">
+					<div class="button">
+						<a href="../index.html">
+							<h4>home</h4>
+						</a>
+					</div>
+				</div>
+				<div class="arrow">
+					<a href="#top" title="go on top"></a>
+				</div>
+	<h2>Название и классификация паттерна</h2>
+	<p><b>К</b>оманда - паттерн поведения объектов.</p>
+	<h2>Назначение</h2>
+	<p><b>И</b>нкапсулирует запрос как объект, позволяя тем самым задавать параметры клиентов для обработки соответствующих запросов, ставить запросы в очередь или протоколировать их, а также поддерживать отмену операций.</p>
+	<h2>Известен также под именем</h2>
+	<p><b>A</b>ction (действие), <b>T</b>ransaction (транзакция).</p>
+	<h2>Мотивация</h2>
+	<p><b>И</b>ногда необходимо посылать объектам запросы, ничего не зная о том, выполнение какой операции запрошено и кто является получателем. Например, в библиотеках для построения пользовательских интерфейсов встречаются такие объекты, как кнопки и меню, которые посылают запрос в ответ на действие пользователя. Но в саму библиотеку не заложена возможность обрабатывать этот запрос, так кактолько приложение, использующее ее, располагает информацией о том, что следуетсделать. Проектировщик библиотеки не владеет никакой информацией о получателе запроса и о том, какие операции тот должен выполнить.</p>
+	<p><b>П</b>аттерн команда позволяет библиотечным объектам отправлять запросы неизвестным объектам приложения, преобразовав сам запрос в объект. Этот объект можно хранить и передавать, как и любой другой. В основе списываемого паттерна лежит абстрактный класс Command, в котором объявлен интерфейс для выполнения операций. В простейшей своей форме этот интерфейс состоит из одной абстрактной операции Execute. Конкретные подклассы Command определяют пару «получатель-действие», сохраняя получателя в переменной экземпляра, и реализуют операцию Execute, так чтобы она посылала запрос. У получателя есть информация, необходимая для выполнения запроса.</p>
+	<img src="../img/pages/2/pc_1.jpg" alt="scheme"/>
+	<p><b>С</b> помощью объектов Command легко реализуются меню. Каждый пункт меню - это экземпляр класса Menultem. Сами меню и все их пункты создает класс Application наряду со всеми остальными элементами пользовательского интерфейса. Класс Appl icat ion отслеживает также открытые пользователем документы.</p>
+	<p><b>П</b>риложение конфигурирует каждый объект Menu It em экземпляром конкретного подкласса Command. Когда пользователь выбирает некоторый пункт меню, ассоциированный с ним объект Menultem вызывает Execute для своего объектакоманды, a Execute выполняет операцию. Объекты Menultem не имеют информации, какой подкласс класса Command они используют. Подклассы Command хранят информацию о получателе запроса и вызывают одну или несколько операций этого получателя.</p>
+	<p><b>Н</b>апример, подкласс PasteCommand поддерживает вставку текста из буфера обмена в документ. Получателем для PasteCommand является Document, который был передан при создании объекта. Операция Execute вызывает операцию Paste документа-получателя.</p>
+	<img src="../img/pages/2/pc_2.jpg" alt="scheme"/>
+	<p><b>Д</b>ля подкласса OpenCommand операция Execute ведет себя по-другому: она запрашивает у пользователя имя документа, создает соответствующий объект Document, извещает о новом документе приложение-получатель и открывает этот документ.</p>
+	<img src="../img/pages/2/pc_3.jpg" alt="scheme"/>
+	<p><b>И</b>ногда объект Menultem должен выполнить последовательность команд. Например, пункт меню для центрирования страницы стандартного размера можно было бы сконструировать сразу из двух объектов: CenterDocumentCommand и Normals!zeCommand. Поскольку такое комбинирование команд- явление обычное, то мы можем определить класс MacroCommand, позволяющий объекту Menultem выполнять произвольное число команд. MacroCommand - это конкретный подкласс класса Command, который просто выполняет последовательность команд. У него нет явного получателя, поскольку для каждой команды определен свой собственный.</p>
+	<img src="../img/pages/2/pc_4.jpg" alt="scheme"/>
+	<p><b>О</b>братите внимание, что в каждом из приведенных примеров паттерн команда отделяет объект, инициирующий операцию, от объекта, который «знает», как ее выполнить. Это позволяет добиться высокой гибкости при проектировании пользовательского интерфейса. Пункт меню и кнопка одновременно могут быть ассоциированы в приложении с некоторой функцией, для этого достаточно приписать обоим элементам один и тот же экземпляр конкретного подкласса класса Command. Мы можем динамически подменять команды, что очень полезно для реализации контекстно-зависимых меню. Можно также поддержать сценарии, если компоновать простые команды в более сложные. Все это выполнимо потому, что объект, инициирующий запрос, должен располагать информацией лишь о том, как его отправить, а не о том, как его выполнить.</p>
+	<h2>Применимость</h2>
+	<p><b>И</b>спользуйте паттерн команда, когда хотите:</p>
+	<ul>
+		<li>параметризовать объекты выполняемым действием, как в случае с пунктами меню Menultem. В процедурном языке такую параметризацию можновыразить с помощью <em>функции обратного вызова,</em> то есть такой функции, которая регистрируется, чтобы быть вызванной позднее. Команды представляют собой объектно-ориентированную альтернативу функциям обратноговызова;</li>
+		<li>определять, ставить в очередь и выполнять запросы в разное время. Время жизни объекта Command необязательно должно зависеть от времени жизни исходного запроса. Если получателя запроса удается реализовать так, чтобы он не зависел от адресного пространства, то объект-команду можно передать другому процессу, который займется его выполнением;</li>
+		<li>поддержать отмену операций. Операция Execute объекта Command можетсохранить состояние, необходимое для отката действий, выполненных командой. В этом случае в интерфейсе класса Command должна быть дополнительная операция Unexecute, которая отменяет действия, выполненные предшествующим обращением к Execute. Выполненные команды хранятся в списке истории. Для реализации произвольного числа уровней отмены и повтора команд нужно обходить этот список соответственно в обратном и прямом направлениях, вызывая при посещении каждого элемента команду Unexecute или Execute;</li>
+		<li>поддержать протоколирование изменений, чтобы их можно было выполнить повторно после аварийной остановки системы. Дополнив интерфейс класса Command операциями сохранения и загрузки, вы сможете вести протокол изменений во внешней памяти. Для восстановления после сбоя нужно будет загрузить сохраненные команды с диска и повторно выполнить их с помощью операции Execute;</li>
+		<li>структурировать систему на основе высокоуровневых операций, построенных из примитивных. Такая структура типична для информационных систем, поддерживающих транзакции. Транзакция инкапсулирует набор изменений данных. Паттерн команда позволяет моделировать транзакции. У всех команд есть общий интерфейс, что дает возможность работать одинаково с любыми транзакциями. С помощью этого паттерна можно легко добавлять в систему новые виды транзакций.</li>
+	</ul>
+	<h2>Структура</h2>
+	<img src="../img/pages/2/pc_5.jpg" alt="scheme"/>
+	<h2>Участники</h2>
+	<ul>
+		<li>
+			<b>Command</b> &ndash; команда:
+			<ul class="line">
+				<li>объявляет интерфейс для выполнения операции;</li>
+			</ul>
+		</li>
+		<li>
+			<b>ConcreteCommand</b> (PasteCommand, OpenCommand) &ndash; конкретная команда:
+			<ul class="line">
+				<li>определяет связь между объектом-получателем Receiver и действием;</li>
+				<li>реализует операцию Execute путем вызова соответствующих операций объекта Receiver;</li>
+			</ul>
+		</li>
+		<li>
+			<b>Client</b> (Application) &ndash; клиент:
+			<ul class="line">
+				<li>создает объект класса ConcreteCommand и устанавливает его получателя;</li>
+			</ul>
+		</li>
+		<li>
+			<b>Invoker</b> (Menultem) &ndash; инициатор:
+			<ul class="line">
+				<li>обращается к команде для выполнения запроса;</li>
+			</ul>
+		</li>
+		<li>
+			<b>Receiver</b> (Document, Application) &ndash; получатель:
+			<ul class="line">
+				<li>располагает информацией о способах выполнения операций, необходимых для удовлетворения запроса. В роли получателя может выступать любой класс.</li>
+			</ul>
+		</li>
+	</ul>
+	<h2>Отношения</h2>
+	<ul>
+		<li>клиент создает объект ConcreteCommand и устанавливает для него получателя;</li>
+		<li>инициатор Invoker сохраняет объект ConcreteCommand;</li>
+		<li>инициатор отправляет запрос, вызывая операцию команды Execute. Если поддерживается отмена выполненных действий, то ConcreteCommand перед вызовом Execute сохраняет информацию о состоянии, достаточную для выполнения отката;</li>
+		<li>объект ConcreteCommand вызывает операции получателя для выполнения запроса.</li>
+	</ul>
+	<p><b>Н</b>а следующей диаграмме видно, как Command разрывает связь между инициатором и получателем (а также запросом, который должен выполнить последний).</p>
+	<img src="../img/pages/2/pc_6.jpg"alt="scheme"/>
+	<h2>Результаты</h2>
+	<p><b>Р</b>езультаты применения паттерна команда таковы:</p>
+	<ul>
+		<li>команда разрывает связь между объектом, инициирующим операцию, и объектом, имеющим информацию о том, как ее выполнить;</li>
+		<li>команды - это самые настоящие объекты. Допускается манипулировать ими и расширять их точно так же, как в случае с любыми другими объектами;</li>
+		<li>из простых команд можно собирать составные, например класс MacroCommand, рассмотренный выше. В общем случае составные команды описываются паттерном компоновщик;</li>
+		<li>добавлять новые команды легко, поскольку никакие существующие классы изменять не нужно.</li>
+	</ul>
+	<h2>Реализация</h2>
+	<p><b>П</b>ри реализации паттерна команда следует обратить внимание на следующие аспекты:</p>
+	<ul>
+		<li><em>насколько «умной» должна быть команда.</em> У команды может быть широкий круг обязанностей. На одном полюсе стоит простое определение связи между получателем и действиями, которые нужно выполнить для удовлетворения запроса. На другом - реализация всего самостоятельно, без обращения за помощью к получателю. Последний вариант полезен, когда вы хотите определить команды, не зависящие от существующих классов, когда подходящего получателя не существует или когда получатель команде точно не известен. Например, команда, создающая новое окно приложения, может не понимать, что именно она создает, а трактовать окно, как любой другой объект. Где-то посередине между двумя крайностями находятся команды, обладающие достаточной информацией для динамического обнаружения своего получателя;</li>
+		<li>
+			<em>поддержка отмены и повтора операций.</em> Команды могут поддерживать отмену и повтор операций, если имеется возможность отменить результаты выполнения (например, операцию Unexecute или Undo). В классе ConcreteCommand может сохраняться необходимая для этого дополнительная информация, в том числе:
+			<ul class="line">
+				<li>объект-получатель Receiver, который выполняет операции в ответ на запрос;</li>
+				<li>аргументы операции, выполненной получателем;</li>
+				<li>исходные значения различных атрибутов получателя, которые могли измениться в результате обработки запроса. Получатель должен предоставить операции, позволяющие команде вернуться в исходное состояние.</li>
+			</ul>
+			Для поддержки всего одного уровня отмены приложению достаточно сохранять только последнюю выполненную команду. Если же нужны многоуровневые отмена и повтор операций, то придется вести список истории выполненных команд. Максимальная длина этого списка и определяет число уровней отмены и повтора. Проход по списку в обратном направлении и откат результатов всех встретившихся ito пути команд отменяет их действие; проход в прямом направлении и выполнение встретившихся команд приводит к повтору действий.
+			<br/>
+			Команду, допускающую отмену, возможно, придется скопировать перед помещением в список истории. Дело в том, что объект команды, использованный для доставки запроса, скажем от пункта меню Menu It em, позже мог быть использован для других запросов. Поэтому копирование необходимо, чтобы определить разные вызовы одной и той же команды, если ее состояние при любом вызове может изменяться.
+			<br/>
+			Например, команда DeleteCoinmand, которая удаляет выбранные объекты, при каждом вызове должна сохранять разные наборы объектов. Поэтому объект DeleteCommand необходимо скопировать после выполнения, а копию поместить в список истории. Если в результате выполнения состояние команды никогда не изменяется, то копировать не нужно - в список достаточно поместить лишь ссылку на команду. Команды, которые обязательно нужно копировать перед помещением в список истории, ведут себя подобно прототипам (см. описание паттерна прототип);
+		</li>
+		<li><em>как избежать накопления ошибок в процессе отмены.</em> При обеспечении надежного, сохраняющего семантику механизма отмены и повтора может возникнуть проблема гистерезиса. При выполнении, отмене и повторе команд иногда накапливаются ошибки, в результате чего состояние приложения оказывается отличным от первоначального. Поэтому порой необходимо сохранять в команде больше информации, дабы гарантировать, что объекты будут целиком восстановлены. Чтобы предоставить команде доступ к этой информации, не раскрывая внутреннего устройства объектов, можно воспользоваться паттерном хранитель;</li>
+		<li><em>применение шаблонов в C++.</em> Для команд, которые не допускают отмену и не имеют аргументов, в языке C++ можно воспользоваться шаблонами, чтобы не создавать подкласс класса Command для каждой пары действие-получатель. Как это сделать, мы продемонстрируем в разделе «Пример кода».</li>
+	</ul>
+	<h2>Пример кода</h2>
+	<p><b>П</b>риведенный ниже код на языке C++ дает представление о реализации классов Command, обсуждавшихся в разделе «Мотивация». Мы определим классы OpenCommand, PasteCommand и MacroCommand. Сначала абстрактный класс Command:</p>
+	<pre>
+		<span class="cl_bl">class</span> <span class="cl_nm_gr">Command</span> {
+		public:
+			virtual <span class="cl_symb">~</span>Command ();
+			virtual void Execute () <span class="cl_symb">=</span> <span class="cl_nmb">0</span>;
+		protected:
+			Command ( ) ;
+		};</pre>
+	<p><b>К</b>оманда OpenCommand открывает документ, имя которому задает пользователь. Конструктору OpenCommand передается объект Application. Функция AskUser запрашивает у пользователя имя открываемого документа:</p>
+	<pre>
+		<span class="cl_bl">class</span> <span class="cl_nm_gr">OpenCommand</span> : <span class="cl_bl">public</span> Command {
+		public:
+			OpenCommand (Application<span class="cl_symb">*</span>) ;
+			<span class="cl_bl">virtual void</span> <span class="cl_bl">Execute</span> ( ) ;
+		protected:
+			<span class="cl_bl">virtual const char</span><span class="cl_symb">*</span> <span class="cl_bl">AskUser</span> ();
+		private:
+			Application<span class="cl_symb">*</span> _application;
+			<span class="cl_bl">char</span><span class="cl_symb">*</span> _response;
+		};
+		OpenCommand::OpenCommand (Application<span class="cl_symb">*</span> a) {
+			_application <span class="cl_symb">=</span> a;
+		}
+		<span class="cl_bl">void</span> OpenCommand::Execute () {
+			<span class="cl_bl">const char</span><span class="cl_symb">*</span> name <span class="cl_symb">=</span> AskUser();
+			<span class="cl_bl">if</span> (name <span class="cl_symb">!=</span> <span class="cl_nmb">0</span>) {
+				Document<span class="cl_symb">*</span> document <span class="cl_symb">=</span> <span class="cl_bl">new</span> Document(name);
+				_application<span class="cl_symb">-></span>Add(document);
+				document<span class="cl_symb">-></span>open() ;
+			}
+		}</pre>
+	<p><b>К</b>оманде PasteCommand в конструкторе передается объект Document, являющийся получателем:</p>
+	<pre>
+		<span class="cl_bl">class</span> <span class="cl_nm_gr">PasteCommand</span> <span class="cl_symb">:</span> <span class="cl_bl">public</span> Command {
+		public:
+			PasteCommand(Document<span class="cl_symb">*</span>);
+			<span class="cl_bl">virtual void</span> ExecuteO;
+		private:
+			Document<span class="cl_symb">*</span> „document;
+		};
+		PasteCommand<span class="cl_symb">::</span>PasteCommand (Document<span class="cl_symb">*</span> doc) {
+			_document <span class="cl_symb">=</span> doc;
+		}
+		<span class="cl_bl">void</span> PasteCommand<span class="cl_symb">::</span>Execute () {
+			_document<span class="cl_symb">-></span>Paste();
+		}</pre>
+	<p><b>В</b> случае с простыми командами, не допускающими отмены и не требующими аргументов, можно воспользоваться шаблоном класса для параметризации получателя. Определим для них шаблонный подкласс SimpleCoiranand, который параметризуется типом получателя Receiver и хранит связь между объектом-получателем и действием, представленным указателем на функцию-член:</p>
+	<pre>
+		<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">PasteCommand</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">Command</span> <span style="color: #f8f8f2">{</span>
+		<span style="color: #f8f8f2">public:</span>
+			<span style="color: #f8f8f2">PasteCommand(Document</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+			<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">ExecuteO;</span>
+		<span style="color: #f8f8f2">private:</span>
+			<span style="color: #f8f8f2">Document</span><span style="color: #f92672">*</span> <span style="color: #960050; background-color: #1e0010">„</span><span style="color: #f8f8f2">document;</span>
+		<span style="color: #f8f8f2">};</span>
+		<span style="color: #f8f8f2">PasteCommand</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">PasteCommand</span> <span style="color: #f8f8f2">(Document</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">doc)</span> <span style="color: #f8f8f2">{</span>
+			<span style="color: #f8f8f2">_document</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">doc;</span>
+		<span style="color: #f8f8f2">}</span>
+		<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">PasteCommand</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Execute</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+			<span style="color: #f8f8f2">_document</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Paste();</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<p><b>К</b>онструктор сохраняет информацию о получателе и действии в соответствующих переменных экземпляра. Операция Execute просто выполняет действие по отношению к получателю:</p>
+	<pre>
+		<span style="color: #66d9ef">template</span> <span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">lt;</span><span style="color: #66d9ef">class</span> <span style="color: #a6e22e">Receiver</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">gt;</span>
+		<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">SimpleCommand</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">lt;Receiver</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">gt;</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Execute</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+		<span style="color: #f8f8f2">(_receiver</span><span style="color: #f92672">-&gt;*</span><span style="color: #f8f8f2">_action)();</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<p><b>Ч</b>тобы создать команду, которая вызывает операцию Action для экземпляра класса MyClass, клиент пишет следующий код:</p>
+	<pre>
+		<span style="color: #f8f8f2">MyClass</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">receiver</span> <span style="color: #f92672">=</span> <span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">MyClass;</span>
+		<span style="color: #75715e">// ...</span>
+		<span style="color: #f8f8f2">Command</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">aCommand</span> <span style="color: #f92672">=</span>
+			<span style="color: #66d9ef">new</span> <span style="color: #f8f8f2">SimpleCommand</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">lt;MyClass</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">gt;(receiver,</span> <span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">amp;MyClass</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Action);</span>
+		<span style="color: #75715e">// ...</span>
+		<span style="color: #f8f8f2">aCommand</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Execute();</span></pre>
+	<p>
+		<b>И</b>мейте в виду, что такое решение годится только для простых команд. Для более сложных команд, которые отслеживают не только получателей, но и аргументы и, возможно, состояние, необходимое для отмены операции, приходится порождать подклассы от класса Command.
+	</p>
+	<p>
+		<b>К</b>ласс Macr©Command управляет выполнением последовательности подкоманд и предоставляет операции для добавления и удаления подкоманд. Задавать получателя не требуется, так как в каждой подкоманде уже определен свой получатель:
+		</p>
+	<pre>
+		<span style="color: #66d9ef">class</span> <span style="color: #a6e22e">MacroCommand</span> <span style="color: #f92672">:</span> <span style="color: #66d9ef">public</span> <span style="color: #f8f8f2">Command</span> <span style="color: #f8f8f2">{</span>
+		<span style="color: #f8f8f2">public:</span>
+		<span style="color: #f8f8f2">MacroCommand();</span>
+			<span style="color: #66d9ef">virtual</span> <span style="color: #f92672">-</span><span style="color: #f8f8f2">MacroCommand();</span>
+			<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Add</span><span style="color: #f8f8f2">(Command</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+			<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Remove</span><span style="color: #f8f8f2">(Command</span><span style="color: #f92672">*</span><span style="color: #f8f8f2">);</span>
+			<span style="color: #66d9ef">virtual</span> <span style="color: #66d9ef">void</span> <span style="color: #a6e22e">Execute</span><span style="color: #f8f8f2">();</span>
+		<span style="color: #f8f8f2">private:</span>
+			<span style="color: #f8f8f2">List</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">lt;Command</span><span style="color: #f92672">*&amp;</span><span style="color: #f8f8f2">gt;</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">_cmds;</span>
+		<span style="color: #f8f8f2">};</span></pre>
+	<p>
+		<b>О</b>сновой класса MacroCommand является его функция-член Execute. Она обходит все подкоманды и для каждой вызывает ее операцию Execute:
+	</p>
+	<pre>
+		<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">MacroCommand</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Execute</span> <span style="color: #f8f8f2">()</span> <span style="color: #f8f8f2">{</span>
+		<span style="color: #f8f8f2">ListIterator</span><span style="color: #f92672">&amp;</span><span style="color: #f8f8f2">lt;Command</span><span style="color: #f92672">*&amp;</span><span style="color: #f8f8f2">gt;</span> <span style="color: #f8f8f2">i(_cmds);</span>
+		<span style="color: #66d9ef">for</span> <span style="color: #f8f8f2">(i.</span> <span style="color: #f8f8f2">First</span> <span style="color: #f8f8f2">{</span> <span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">;</span> <span style="color: #f92672">!</span><span style="color: #f8f8f2">i.IsDone();</span> <span style="color: #f8f8f2">i.NextO)</span> <span style="color: #f8f8f2">{</span>
+			<span style="color: #f8f8f2">Command</span><span style="color: #f92672">*</span> <span style="color: #960050;">с</span> <span style="color: #f92672">=</span> <span style="color: #f8f8f2">i.Currentltem();</span>
+			<span style="color: #f8f8f2">c</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Execute();</span>
+		<span style="color: #f8f8f2">}</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<p>
+		<b>О</b>братите внимание, что если бы в классе MacroCommand была реализована операция отмены Unexecute, то при ее выполнении подкоманды должны были бы отменяться в порядке, <em>обратном</em> тому, который применяется в реализации Execute.
+	</p>
+	<p>
+		<b>Н</b>аконец, в классе MacroCommand должны быть операции для добавления и удаления подкоманд:
+	</p>
+	<pre>
+		<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">MacroCommand</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Add</span> <span style="color: #f8f8f2">(Command</span><span style="color: #f92672">*</span> с<span style="color: #f8f8f2">)</span> <span style="color: #f8f8f2">{</span>
+			<span style="color: #f8f8f2">_cmds</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Append(c)</span> <span style="color: #f8f8f2">;</span>
+		<span style="color: #f8f8f2">}</span>
+		<span style="color: #66d9ef">void</span> <span style="color: #f8f8f2">MacroCommand</span><span style="color: #f92672">::</span><span style="color: #f8f8f2">Remove</span> <span style="color: #f8f8f2">(Command</span><span style="color: #f92672">*</span> <span style="color: #f8f8f2">c)</span> <span style="color: #f8f8f2">{</span>
+			<span style="color: #f8f8f2">_cmds</span><span style="color: #f92672">-&gt;</span><span style="color: #f8f8f2">Remove(c);</span>
+		<span style="color: #f8f8f2">}</span></pre>
+	<h2>Известные применения</h2>
+	<p>
+		<b>Б</b>ыть может, впервые паттерн команда появился в работе Генри Либермана (Henry Lieberman) [Lie85]. В системе МасАрр [Арр89] команды широко применяются для реализации допускающих отмену операций. В ЕТ++ [WGM88], InterViews [LCI+92] и Unidraw [VL90] также имеются классы, описываемые паттерном команда. Так, в библиотеке Interviews определен абстрактный класс Action, который определяет всю функциональность команд. Есть и шаблон ActionCallback, параметризованный действием Action, который автоматически инстанцирует подклассы команд.
+	</p>
+	<p>
+		<b>В</b> библиотеке классов THINK [Sym93b] также используются команды для поддержки отмены операций. В THINK команды называются <em>задачами</em> (Tasks). Объекты Task передаются по цепочке обязанностей, пока не будут кем-то обработаны.
+	</p>
+	<p>
+		<b>О</b>бъекты команд в каркасе Unidraw уникальны в том отношении, что могут вести себя подобно сообщениям. В Unidraw команду можно послать другому объекту для интерпретации, результат которой зависит от объекта-получателя. Более того, сам получатель может делегировать интерпретацию следующему объекту, обычно своему родителю. Это напоминает паттерн цепочка обязанностей. Таким образом, в Unidraw получатель вычисляется, а не хранится. Механизм интерпретации в Unidraw использует информацию о типе, доступную во время выполнения.
+	</p>
+	<p>
+		<b>Д</b>жеймс Коплиен описывает, как в языке C++ реализуются функторы &ndash; объекты, ведущие себя, как функции [Сор92]. За счет перегрузки оператора вызова operator () он становится более понятным. Смысл паттерна команда в другом &ndash; он устанавливает и поддерживает связь между получателем и функцией (то есть действием), а не просто функцию.
+	</p>
+	<h2>Родственные паттерны</h2>
+	<p>
+		<b>П</b>аттерн компоновщик можно использовать для реализации макрокоманд.
+	</p>
+	<p>
+		<b>П</b>аттерн хранитель иногда проектируется так, что сохраняет состояние команды, необходимое для отмены ее действия.
+	</p>
+	<p>
+		<b>К</b>оманда, которую нужно копировать перед помещением в список истории, ведет себя, как прототип.
+	</p>
+</section>
+		<footer>
+						<div class="copy">
+							<h3> Made by El_paso - Rivne 2016</h3>
+						</div> 
+		</footer>
+	</main>
+</body>
+</html>
