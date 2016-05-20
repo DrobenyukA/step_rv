@@ -1,5 +1,16 @@
 h1{
+	margin: 0;
+	padding: 15px 0;
+	color: #444;
 	text-align: center;
+	text-transform: uppercase;
+	background-color: #80BD57;
+}
+span{
+	display: block;
+	font-size: 28px;
+	font-style: italic;
+	text-transform: none;
 }
 
 h2{
@@ -8,9 +19,7 @@ h2{
 }
 
 .task{
-	margin: 15px 0 0 25px;
-	padding-left: 5px;
-	padding-bottom: 5px;
+	padding: 25px 15px 0 25px;
 	border-bottom: 1px solid #ccc;
 }
 
@@ -19,11 +28,44 @@ p{
 	font-size: 18px;
 }
 
-button{
-	margin-left: 15px;
+ul{
+	margin-top: -16px;
 }
 
-.red h2,
-.red p {
-	color: #f00;
+li{
+	font-size: 18px;
+}
+
+code{
+	display: block;
+	margin: 5px 0 5px 5%;
+}
+
+button{
+	display: inline-block;
+	right: 0;
+	margin-left: 80%;
+	margin-bottom: 10px;
+	padding: 7px 20px;
+	border: none;
+	border-radius: 10px;
+	color: #fff;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	background-color: #80BD57;
+	outline: none;
+}
+button:hover{
+	color: #000;
+	letter-spacing: 1px;
+	font-weight: bold;
+	background-color: #FFDD00;
+	cursor: pointer;
+	transition: all 0.5s;
+}
+
+
+.sec {
+	
+	background-color: #efefef;
 }
