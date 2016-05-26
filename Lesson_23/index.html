@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Home Task for Lesson 23</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<h1>Home Task for lesson 23</h1>
+	<section>
+		<h2>Task 1</h2>
+		<div class="form">
+			<input type="text" id="student_name" placeholder="Enter students name">
+			<button onclick="searchStudent()">Search student</button>
+			<input type="text" id="group_name" placeholder="Enter group name">
+			<button onclick="searchGroup()">Search group</button>
+            <hr/>
+			<button onclick="searchAllGroup()">Show all groups</button>
+		</div>
+		<div class="info" style="display: table;">
+			<header>
+				<div class="section">
+					<div class="cell info-20">Student Name</div>
+					<div class="cell info-20">Group</div>
+					<div class="cell info-60">
+						<div class="section">
+							<div class="section">
+								<h3>Marks</h3>
+							</div>
+							<div class="section">
+								<div class="cell info-16">
+									htnl
+								</div>
+								<div class="cell info-16">
+									css
+								</div>
+								<div class="cell info-16">
+									js
+								</div>
+								<div class="cell info-16">
+									php
+								</div>
+								<div class="cell info-16">
+									python
+								</div>
+								<div class="cell info-16 missed">
+									total missed
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</header>
+		</div>
+	</section>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+	<script src="students.js"></script>
+	<script src="main.js"></script>
+	<script src="statistics.js"></script>
+</body>
+</html>
