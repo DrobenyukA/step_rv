@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script>
+    /**
+    * Module for creating a students group
+    * @type {{students}}
+    */
+
+    var info = (function(){
+
+        /**
+         * get random @int value from min to max
+         */
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min +1)) + min;
+        }
+
+        /**
+         * return @array of marks
+         */
+        function getMarks(){
+            var arr    = [],
+                    random =  getRandomInt(10, 15);
+
+            for (var i = 0; i < random; i++){
+                arr.push(getRandomInt(0, 11));
+            }
+
+            return arr;
+        };
+
+        /**
+         * return @string student first name
+         */
+        function getFristName(instanse){
+            var arr = ['Аркадій', 'Артем', 'Борис', 'Валентин', 'Валерій',
+                'Віктор', 'Віталій', 'Гаврило', 'Данило', 'Дмитро',
+                'Євген', 'Захар', 'Кирило', 'Левко', 'Максим',
+                'Михайло', 'Нестор', 'Олег', 'Павло', 'Роман'];
+            return arr[instanse];
+        }
+
+        /**
+         * return @string student first name
+         */
+        function getCity(instanse){
+            var arr = ['Vienna', 'Graz', 'Linz', 'Salzburg', 'Innsbruck'];
+            return arr[instanse];
+        }
+
+        /**
+         * returns @array of @objects with 30 students
+         */
+        function getStudents(){
+            var arr = [];
+            for (var i = 0; i < 12; i++){
+                arr.push({
+                    firstName: getFristName(getRandomInt(0, 12)),
+                    age: getRandomInt(0, 50),
+                    city: getCity(getRandomInt(0, 4))
+
+                });
+            }
+            return arr;
+        };
+
+        var students = getStudents();
+
+        function searchName(name) {
+
+            //console.log(students);
+            //console.log(name);
+
+            for(var i = 0; i< students.length; i++){
+                //console.log(students[i].firstName+ ' - ' + name);
+                //console.log('=====================');
+                if (name === students[i].firstName){
+                    console.log(students[i]);
+                } else if(i == students.length) {
+                    return console.log('There is no student with name ' + name);
+                }
+
+            }
+
+        };
+
+        function searchAge(age){
+
+            for(var i = 0; i< students.length; i++){
+                if (age === students[i].age){
+                    console.log(students[i]);
+                }else if(i == students.length) {
+                    return console.log('There is no student with age ' + age);
+                }
+
+            }
+
+        };
+
+        function searchCity(city) {
+            for(var i = 0; i< students.length; i++){
+                if (city === students[i].city){
+                    console.log(students[i]);
+                }else if(i == students.length) {
+                    return console.log('There is no student who lives in ' + city);
+                }
+            }
+
+        };
+
+        function getAll(){
+            console.log(students);
+        }
+
+        return{
+            getAll: getAll,
+            getByName: searchName,
+            getByAge: searchAge,
+            getByCity: searchCity
+        }
+    })();
+</script>
+</body>
+</html>
