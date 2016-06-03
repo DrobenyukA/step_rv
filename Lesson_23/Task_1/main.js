@@ -30,7 +30,7 @@ function searchStudent(){
 
 }
 
-/** !!! Написати прінтер
+/** 
  * PRINT FUNCTION
  * print @array with @objects of found group with students
  */
@@ -49,8 +49,6 @@ function searchGroup(instanse){
 		}
 	}
     statistic = getSingleGroupStat(group);
-    
-    //console.log(statistic);
 
     if (!instanse){
 

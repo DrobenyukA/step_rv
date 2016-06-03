@@ -15,7 +15,7 @@ var statistic = (function(){
             python     = getAverage(param.python);
 
         /**
-         * return array with two values
+         * return object with arrays which has two values
          * first  - average mark from subject;
          * second - total missed lessons;
          * @param instance
@@ -56,8 +56,8 @@ var statistic = (function(){
      */
     function getSingleGroupStat(instance){
         var   group = instance;
-        sGrStat = [],
-            result = {
+            sGrStat = [],
+             result = {
                 html: 0,
                 css: 0,
                 javaScript: 0,
@@ -82,7 +82,7 @@ var statistic = (function(){
             result.missingLes += sGrStat[j].python[1];
         }
 
-        // Calculating average mark from all group in everu subject
+        // Calculating average mark from all group in every subject
         result.html = Math.round(result.html / sGrStat.length);
         result.css = Math.round(result.css / sGrStat.length);
         result.javaScript = Math.round(result.javaScript / sGrStat.length);
