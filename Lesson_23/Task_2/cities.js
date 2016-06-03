@@ -1,5 +1,5 @@
 /**
- * Module for simulating data from DB
+ * Module for simulating received data from DB
  * @type {{data}}
  */
 var weather = function () {

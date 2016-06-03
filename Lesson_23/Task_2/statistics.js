@@ -1,3 +1,7 @@
+/**
+ * Module for creating hte weather data
+ * @type {{city, allCities, search}}
+ */
 var stat = function () {
     var data = weather.data;
 

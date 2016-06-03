@@ -2,9 +2,7 @@ var statistic = (function(){
 
     /**
      * Statistic calculator
-     *
      * @param param object(student) for calculating statistic
-     *
      * @returns {{html: *, css: *, javaScript: *, php: *, python: *}}
      */
     function getStatistic(param){
