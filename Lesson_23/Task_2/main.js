@@ -1,3 +1,5 @@
+/** Button functions **/
+
 function searchByCity() {
     var request = $('#city').val(),
         result = stat.city(request);

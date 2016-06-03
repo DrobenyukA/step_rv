@@ -1,5 +1,5 @@
 /**
- * Module for creating a students group
+ * Module for creating a students groups
  * @type {{students}}
  */
 

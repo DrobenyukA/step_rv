@@ -1,7 +1,7 @@
 var students = info.students;
 
 /**
- * PRINT FUNCTION
+ * 
  * print @array with @objects of found students
  */
 function searchStudent(){
