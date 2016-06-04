@@ -127,4 +127,4 @@ var stat = function () {
         allCities: getAllCities(),
         search: searchParam,
     }
-}();
+}(weather);

@@ -1,3 +1,4 @@
+
 function is_array(instance){
     if (typeof(instance) === typeof([])){
         return true;
