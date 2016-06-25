@@ -10,13 +10,18 @@ module.exports = function () {
      * @private
      */
     function _construct(){
-        var data =[];
+        var data =[{
+                 cityName: "test",
+                 moisture: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+              temperature: [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+            windDirection: [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]
+        }];
 
         for(var i = 0; i < 4; i++){
             data.push({
-                cityName: getCityName(i),
-                moisture: setRandomParams(40, 60),
-                temperature: setRandomParams(16, 20),
+                     cityName: getCityName(i),
+                     moisture: setRandomParams(40, 60),
+                  temperature: setRandomParams(16, 20),
                 windDirection: setRandomParams(0, 7)
             });
         }
