@@ -1,0 +1,160 @@
+h1 {
+	text-align: center;
+}
+
+.form {
+	width: 50%;
+	min-width: 320px;
+	margin: 0 auto;
+	padding: 1%;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+h2 {
+	font-family: sans-serif;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.form {
+	outline: 1px solid #000;
+}
+
+input[type="text"] {
+	display: block;
+	width: 90%;
+	margin: 1% auto;
+	padding: 1%;
+}
+
+button {
+	display: block;
+	width: 125px;
+	margin: 1% auto;
+	padding: 1% 2%;
+	border: none;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #fff;
+	color: #eee;
+	background-color: #49A1FF;
+	font-weight: bold;
+	letter-spacing: 0.025em;
+	text-transform: uppercase;
+	transition: all 300ms;
+	outline: none;
+}
+
+button:hover {
+	border: 1px solid #0B58FB;
+	background-color: #087FFB;
+}
+
+button:active {
+	box-shadow: inset 0 0 10px #f3f3f3;
+	border: 1px solid #fff;
+}
+
+button[onclick="searchAllGroup()"] {
+	width: 200px;
+	color: #fff;
+}
+
+hr {
+	margin: 7% 0 2%;
+}
+
+.info {
+	display: table;
+	width: 50%;
+	min-width: 320px;
+	margin: 2% auto;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	text-align: center;
+	outline: 1px solid black;
+}
+
+.info * {
+	-webkit-box-sizing: inherit;
+	-moz-box-sizing: inherit;
+	box-sizing: inherit;
+}
+
+.info .section {
+	width: 100%;
+	vertical-align: middle;
+}
+
+.info .row {
+	display: table-row;
+}
+
+.info header {
+	display: table-caption;
+	font-weight: bold;
+	color: #0e2850;
+	background-color: #B4D2F7;
+}
+
+.info .cell {
+	display: table-cell;
+	padding: 1%;
+	color: #0e2850;
+	border: 1px solid #0F5FBE;
+	vertical-align: middle;
+}
+
+.info .info-100 {
+	width: 100%;
+}
+
+.info .info-80 {
+	padding: 0;
+	width: 80%;
+}
+
+.info .info-60 {
+	padding: 0;
+	width: 60%;
+}
+
+.info .info-20 {
+	width: 20%;
+}
+
+.info .info-16 {
+	width: 16.666666667%;
+	text-transform: uppercase;
+	font-size: 0.75em;
+}
+
+.info .info-10 {
+	position: relative;
+	width: 10%;
+}
+
+.info .missed {
+	color: #ddd;
+	background-color: #49A1FF;
+}
+
+.second {
+	background-color: #B4D2F7;
+}
+
+.header .section .section:last-child {
+	border-top: 2px solid #0F5FBE;
+}
+
+.info span {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 2px;
+	font-size: 14px;
+}

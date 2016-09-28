@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+
+	<select id="name">
+		<option value="">-</option>
+		<option value="truses">truses</option>
+		<option value="tshirt">tshirt</option>
+		<option value="underwear">underwear</option>
+	</select>
+	<select id="size">
+		<option value="">-</option>
+		<option value="S">S</option>
+		<option value="M">M</option>
+		<option value="L">L</option>
+	</select>
+	<select id="price">
+		<option value="">-</option>
+		<option value="150">150 &mdash; </option>
+		<option value="250">250</option>
+		<option value="350">350</option>
+	</select>
+	<button onclick="search();">search</button>
+	<div></div>
+	
+	<script type="text/javascript" src="jquery-1.12.3.min.js">
+	</script>
+	<script type="text/javascript">
+		
+		function search(){
+			$('div').html(' ');
+			
+			var name = $('#name').val(),
+				size = $('#size').val(),
+				price = $('#price').val();
+			
+			if (name){
+				var obj = victoria.name(name);
+				name = [];
+				size = [];
+				price =[];
+
+				for (var i = 0; i < obj.length; i++){
+					name.push(obj[i].name);
+					size.push(obj[i].size);
+					price.push(obj[i].price);
+				}
+
+				printItems(name, size, price);
+			}
+
+			if (size){
+				var obj = victoria.size(size);
+				name = [];
+				size = [];
+				price =[];
+				for (var i = 0; i < obj.length; i++){
+					name.push(obj[i].name);
+					size.push(obj[i].size);
+					price.push(obj[i].price);
+				}
+				printItems(name, size, price);
+			}
+
+			if (price){
+				var obj = victoria.price(price);
+				name = [];
+				size = [];
+				price =[];
+
+				for (var i = 0; i < obj.length; i++){
+					name.push(obj[i].name);
+					size.push(obj[i].size);
+					price.push(obj[i].price);
+				}
+				printItems(name, size, price);
+			}
+			
+			function printItems(name, size, price){
+				for (var i = 0; i < name.length; i++){
+					$('div').append([
+						'<p> Name: ' + name[i] + '</p>',
+						'<p> Size: ' + size[i] + '</p>',
+						'<p> Price: ' + price[i] + '</p>',
+						'<hr>'
+						]);
+				}
+			}
+		}
+		
+		var victoria = (function(){
+			var catacog = [
+				{
+					name: 'truses',
+					size: 'M',
+					price: 250	
+				},
+				{
+					name: 'tshirt',
+					size: 'S',
+					price: 150	
+				},
+				{
+					name: 'underwear',
+					size: 'L',
+					price: 350
+				},
+				{
+					name: 'truses',
+					size: 'L',
+					price: 150	
+				},
+				{
+					name: 'underwear',
+					size: 'S',
+					price: 150
+				},
+				{
+					name: 'tshirt',
+					size: 'M',
+					price: 250	
+				}
+			];
+
+			
+			var seachByName = function (name){
+				var result = [];
+				
+				for (var i = 0; i < catacog.length; i++){
+					if (catacog[i].name == name){
+						result.push(catacog[i]);
+					}
+				}
+				return result;
+			}
+		
+			var seachByPrice = function (price){
+				
+				var result = [];
+				
+				for (var i = 0; i < catacog.length; i++){
+					
+					if (catacog[i].price == price){
+						result.push(catacog[i]);
+					} 
+					
+				}
+				return result;
+				
+			}
+			var seachBySize = function (size){
+				var result = [];
+				
+				for (var i = 0; i < catacog.length; i++){
+					
+					if (catacog[i].size == size){
+						result.push(catacog[i]);
+					} 
+					
+				}
+				return result;
+				
+			}
+			
+			return{
+				name: seachByName,
+				price: seachByPrice,
+				size: seachBySize
+			}
+		})();
+		
+	</script>
+</body>
+</html>
