@@ -1,0 +1,19 @@
+@media screen and (max-width: 640px) {
+   body{
+       min-width: 640px;
+   }
+    .search-form{
+        width: 75%;
+    }
+
+    select,
+    input{
+        display: block;
+        margin: 1% auto;
+        font-size: 18px;
+    }
+
+    select{
+        width:50%;
+    }
+}

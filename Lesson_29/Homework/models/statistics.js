@@ -1,4 +1,4 @@
-var weather = require('./weather.js');
+var weather = require('./../data/weather.js');
 /**
  * Module for creating hte weather data
  * @type {{city, allCities, search}}
@@ -76,7 +76,10 @@ module.exports = function () {
     function getAllCities(){
         var result = [];
         for (var i = 0; i < data.length; i++){
-            result.push(getOneCityStat(data[i].cityName));
+
+            if (data[i].cityName != "test"){
+                result.push(getOneCityStat(data[i].cityName));
+            }
         }
         return result;
     }
@@ -89,6 +92,7 @@ module.exports = function () {
      */
     function searchParam(param, instance){
         var result = [];
+
         for(var i = 0; i < data.length; i++){
                 if (param == 'moisture'){
                     for (var j = 0; j < data[i].moisture.length; j++){
